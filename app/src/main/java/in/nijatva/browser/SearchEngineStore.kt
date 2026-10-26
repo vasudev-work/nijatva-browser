@@ -78,3 +78,4 @@ class SearchEngineStore(context: Context) {
         SearchEngine("Sarvam AI", "https://sarvam.ai/")
     )
 }
+
