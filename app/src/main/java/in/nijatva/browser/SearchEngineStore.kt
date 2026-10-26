@@ -66,16 +66,20 @@ class SearchEngineStore(context: Context) {
         return if (t.contains("%s")) t.replace("%s", enc) else t + enc
     }
 
+    // Q is assembled from parts on purpose. Some tooling strips the raw
+    // query-template literal out of file contents, which silently breaks
+    // every search engine below. Keep it split.
+    private val Q: String = "?" + "q" + "=" + "%s"
+
     private fun defaults(): List<SearchEngine> = listOf(
-        SearchEngine("Google", "https://www.google.com/search"),
-        SearchEngine("Bing", "https://www.bing.com/search"),
-        SearchEngine("DuckDuckGo", "https://duckduckgo.com/"),
-        SearchEngine("Brave Search", "https://search.brave.com/search"),
-        SearchEngine("Ecosia", "https://www.ecosia.org/search"),
-        SearchEngine("Qmuma", "https://qmuma.com/search"),
-        SearchEngine("iBharat", "https://ibharat.org/search"),
-        SearchEngine("Indus AI", "https://indus.ai/"),
-        SearchEngine("Sarvam AI", "https://sarvam.ai/")
+        SearchEngine("Google", "https://www.google.com/search" + Q),
+        SearchEngine("Bing", "https://www.bing.com/search" + Q),
+        SearchEngine("DuckDuckGo", "https://duckduckgo.com/" + Q),
+        SearchEngine("Brave Search", "https://search.brave.com/search" + Q),
+        SearchEngine("Ecosia", "https://www.ecosia.org/search" + Q),
+        SearchEngine("Qmuma", "https://qmuma.com/search" + Q),
+        SearchEngine("iBharat", "https://ibharat.org/search" + Q),
+        SearchEngine("Indus AI", "https://indus.ai/" + Q),
+        SearchEngine("Sarvam AI", "https://sarvam.ai/" + Q)
     )
 }
-
