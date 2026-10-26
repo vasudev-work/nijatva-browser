@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+        <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:name=".NijatvaApp"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_nijatva_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@drawable/ic_nijatva_launcher"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true"
+        android:theme="@style/Theme.Nijatva">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".SettingsActivity" android:exported="false" android:label="@string/settings_title" />
+        <activity android:name=".ShieldsActivity" android:exported="false" android:label="@string/r_shields" />
+        <activity android:name=".AppearanceActivity" android:exported="false" android:label="@string/r_appearance" />
+        <activity android:name=".NewTabPageActivity" android:exported="false" android:label="@string/r_ntp" />
+        <activity android:name=".LanguagesActivity" android:exported="false" android:label="@string/r_languages" />
+        <activity android:name=".PasswordsActivity" android:exported="false" android:label="@string/r_passwords" />
+        <activity android:name=".AutofillActivity" android:exported="false" android:label="@string/r_autofill" />
+        <activity android:name=".AIActivity" android:exported="false" android:label="@string/ai_title" />
+        <activity android:name=".AboutActivity" android:exported="false" android:label="@string/about_title" />
+        <activity android:name="in.nijatva.browser.appstore.SettingsUIActivity" android:exported="false" android:label="@string/advanced_settings" />
+        <activity android:name=".ExtensionsActivity" android:exported="false" android:label="@string/r_extensions" />
+        <activity android:name=".AdvancedActivity" android:exported="false" android:label="@string/r_power" />
+        <activity android:name=".PrivacyActivity" android:exported="false" android:label="@string/r_privacy_dashboard" />
+        <activity android:name=".HomeShortcutsActivity" android:exported="false" android:label="@string/r_home_shortcuts" />
+        <activity android:name=".BackupActivity" android:exported="false" android:label="@string/r_backup" />
+        <activity android:name=".SearchEngineActivity" android:exported="false" android:label="@string/s_search_engine" />
+        <activity android:name=".ToolbarActivity" android:exported="false" android:label="@string/s_toolbar_nav" />
+        <activity android:name=".TabsActivity" android:exported="false" android:label="@string/s_tabs" />
+        <activity android:name=".HistoryActivity" android:exported="false" android:label="@string/s_history" />
+        <activity android:name=".BookmarksActivity" android:exported="false" android:label="@string/s_bookmarks" />
+        <activity android:name=".SitePermissionsActivity" android:exported="false" android:label="@string/s_permissions" />
+        <service android:name=".MediaPlaybackService" android:exported="false" android:foregroundServiceType="mediaPlayback" />
+        <activity android:name=".HomepageActivity" android:exported="false" android:label="@string/hp_title" />
+        <activity android:name=".DownloadSettingsActivity" android:exported="false" android:label="@string/dls_title" />
+        <activity android:name=".ScreenFilterActivity" android:exported="false" android:label="@string/sf_title" />
+        <activity android:name=".HistorySettingsActivity" android:exported="false" android:label="@string/hs_title" />
+        <activity android:name=".ProfilesActivity" android:exported="false" android:label="@string/pf_title" />
+        <activity android:name=".NetLogActivity" android:exported="false" android:label="@string/nl_title" />
+        <activity android:name=".UrlFiltersActivity" android:exported="false" android:label="@string/uf_title" />
+        <activity android:name=".AdBlockActivity" android:exported="false" android:label="@string/ab_title" />
+        <activity android:name=".FilesActivity" android:exported="false" android:label="@string/fl_title" />
+        <activity android:name=".ReadingActivity" android:exported="false" android:label="@string/rd_title" />
+        <activity android:name=".DiagnosticsActivity" android:exported="false" android:label="@string/dg_title" />
+        <activity android:name=".UserStylesActivity" android:exported="false" android:label="@string/us_title" />
+        <activity android:name=".MediaActivity" android:exported="false" android:label="@string/m_media" />
+        <activity android:name=".ReadingListActivity" android:exported="false" android:label="@string/rl_title" />
+        <receiver
+            android:name=".DownloadActionReceiver"
+            android:exported="false" />
+    </application>
+
+</manifest>
