@@ -13,7 +13,7 @@ import org.json.JSONObject
 object ExtStore {
 
     const val DEFAULT_BASE =
-        "https://raw.githubusercontent.com/nijatva/nijatva-browser/main/extensions/"
+        "https://raw.githubusercontent.com/vasudev-work/nijatva-browser/main/extensions/"
 
     data class Remote(
         val id: String,
