@@ -6,7 +6,8 @@ A privacy-first Android browser built on the system WebView.
 
 No Google Play Services. No account. No telemetry. History, bookmarks, passwords, containers and filters live in your device's own storage.
 
-Part of the [Nijatva](https://nijatva.github.io) suite by **DEVIRA**.
+Part of the Nijatva suite by **DEVIRA**. The repository currently lives under the
+`vasudev-work` account and moves to the `nijatva` organisation once that is created.
 
 ---
 
@@ -68,7 +69,7 @@ Tab management and tab groups, bookmarks, history with its own retention setting
 Requires JDK 17 and Android SDK 35.
 
 ```bash
-git clone https://github.com/nijatva/nijatva-browser.git
+git clone https://github.com/vasudev-work/nijatva-browser.git
 cd nijatva-browser
 ./gradlew assembleDebug
 ```
