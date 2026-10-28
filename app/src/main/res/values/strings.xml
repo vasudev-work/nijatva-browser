@@ -713,4 +713,7 @@
     <string name="tb_undo_sum">Show a short "Undo" after a tab closes</string>
     <string name="crash_title">Last run crashed</string>
     <string name="crash_clear">Clear</string>
+    <string name="st_essentials">Essentials</string>
+    <string name="st_all_settings">All settings</string>
+    <string name="st_all_settings_sub">%1$d more, grouped and A to Z</string>
 </resources>
