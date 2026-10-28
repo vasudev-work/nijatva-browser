@@ -6,6 +6,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,20 +20,46 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # The repository has gradle/wrapper/gradle-wrapper.properties but no
+      # gradlew script and no wrapper jar, so ./gradlew cannot run. Gradle comes
+      # from the setup-gradle action instead.
       - uses: gradle/actions/setup-gradle@v4
+
+      - name: Make sure the SDK platform is installed
+        run: |
+          SDK="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          SDKMGR="$SDK/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMGR" --licenses > /dev/null 2>&1 || true
+          "$SDKMGR" "platforms;android-35" "build-tools;35.0.0" > /dev/null 2>&1 || true
 
       - name: Refuse to build if a Google Play Services dependency appears
         run: |
-          if ./gradlew -q app:dependencies --configuration releaseRuntimeClasspath \
-               | grep -E "com\\.google\\.android\\.gms|com\\.google\\.firebase|play-services"; then
+          if gradle -q app:dependencies --configuration releaseRuntimeClasspath \
+               | grep -E "com\.google\.android\.gms|com\.google\.firebase|play-services"; then
             echo "::error::A Google Play Services or Firebase dependency was resolved."
             exit 1
           fi
 
       - name: Assemble debug
-        run: ./gradlew assembleDebug --stacktrace
+        run: gradle assembleDebug --stacktrace
+
+      - name: Name the APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/Nijatva-debug.apk"
 
       - uses: actions/upload-artifact@v4
         with:
           name: nijatva-browser-debug
           path: app/build/outputs/apk/debug/*.apk
+
+      - name: Publish or update the release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Nijatva Browser (latest)
+          make_latest: true
+          body: |
+            Debug build of Nijatva Browser, assembled from the latest commit on main.
+
+            Package: `in.nijatva.browser.debug` - installs alongside the release build.
+          files: Nijatva-debug.apk
