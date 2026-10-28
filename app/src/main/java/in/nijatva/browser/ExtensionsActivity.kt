@@ -8,7 +8,9 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.view.Gravity
 import android.view.ViewGroup
+import android.content.res.ColorStateList
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -102,7 +104,7 @@ class ExtensionsActivity : BaseSettingsActivity() {
         bg.setColor(attr(R.attr.surfaceColor))
         card.background = bg
 
-        card.addView(iconView(e.name), LinearLayout.LayoutParams(dp(38), dp(38)))
+        card.addView(iconView(e.id, e.name), LinearLayout.LayoutParams(dp(38), dp(38)))
 
         val col = LinearLayout(this)
         col.orientation = LinearLayout.VERTICAL
@@ -147,7 +149,26 @@ class ExtensionsActivity : BaseSettingsActivity() {
         content.addView(card, clp)
     }
 
-    private fun iconView(name: String): TextView {
+    /**
+     * The badge on the left of a row: a real glyph for the extensions Nijatva
+     * ships (looked up by id, so renaming one does not lose its icon), and the
+     * first letter for scripts the user brought themselves.
+     */
+    private fun iconView(id: String, name: String): android.view.View {
+        val colour = palette[Math.abs(name.hashCode()) % palette.size]
+        val glyph = extIcons[id]
+        if (glyph != null) {
+            val iv = ImageView(this)
+            iv.setImageResource(glyph)
+            iv.imageTintList = ColorStateList.valueOf(Color.WHITE)
+            iv.scaleType = ImageView.ScaleType.FIT_CENTER
+            iv.setPadding(dp(9), dp(9), dp(9), dp(9))
+            val d = GradientDrawable()
+            d.cornerRadius = dp(12).toFloat()
+            d.setColor(colour)
+            iv.background = d
+            return iv
+        }
         val t = TextView(this)
         t.text = (name.trim().firstOrNull() ?: '?').uppercase()
         t.gravity = Gravity.CENTER
@@ -156,10 +177,29 @@ class ExtensionsActivity : BaseSettingsActivity() {
         t.setTypeface(null, Typeface.BOLD)
         val d = GradientDrawable()
         d.cornerRadius = dp(12).toFloat()
-        d.setColor(palette[Math.abs(name.hashCode()) % palette.size])
+        d.setColor(colour)
         t.background = d
         return t
     }
+
+    private val extIcons = mapOf(
+        "builtin-dark" to R.drawable.ic_brightness,
+        "builtin-font" to R.drawable.ic_zoom,
+        "builtin-cookie" to R.drawable.ic_cookie,
+        "builtin-json" to R.drawable.ic_code,
+        "builtin-ryd" to R.drawable.ic_thumbdown,
+        "builtin-media" to R.drawable.ic_movie,
+        "builtin-bgplay" to R.drawable.ic_speak,
+        "builtin-target" to R.drawable.ic_new_tab,
+        "cat-shorts" to R.drawable.ic_eyeoff,
+        "cat-ytad" to R.drawable.ic_forward,
+        "cat-noautoplay" to R.drawable.ic_block,
+        "cat-widegh" to R.drawable.ic_desktop,
+        "cat-sticky" to R.drawable.ic_pin,
+        "cat-wiki" to R.drawable.ic_book,
+        "cat-read" to R.drawable.ic_font,
+        "cat-gray" to R.drawable.ic_filter
+    )
 
     /** Pull the userscript metadata block out and use it for anything not given. */
     private fun withMeta(name: String, pattern: String, code: String, desc: String): Extension {
@@ -276,7 +316,7 @@ class ExtensionsActivity : BaseSettingsActivity() {
         bg.cornerRadius = dp(16).toFloat()
         bg.setColor(attr(R.attr.surfaceColor))
         card.background = bg
-        card.addView(iconView(r.name), LinearLayout.LayoutParams(dp(38), dp(38)))
+        card.addView(iconView(r.id, r.name), LinearLayout.LayoutParams(dp(38), dp(38)))
         val col = LinearLayout(this)
         col.orientation = LinearLayout.VERTICAL
         val nm = TextView(this)
