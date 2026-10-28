@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Nijatva launcher: the ink tile behind the mark. -->
+<!-- Nijatva launcher background: the same ink the mark was drawn on. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <gradient
-        android:angle="270"
-        android:startColor="#10141B"
-        android:endColor="#090B10" />
+    <solid android:color="#0D121C" />
 </shape>
