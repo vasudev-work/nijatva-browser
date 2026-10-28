@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Nijatva launcher background: the same ink the mark was drawn on. -->
+<!-- Nijatva launcher background: Matte Black from the GBWB palette. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <solid android:color="#0D121C" />
+    <solid android:color="#121212" />
 </shape>

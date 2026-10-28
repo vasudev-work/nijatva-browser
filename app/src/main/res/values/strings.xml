@@ -711,4 +711,6 @@
     <string name="tb_show_title_sum">The address bar shows the title instead of the URL</string>
     <string name="tb_undo">Undo after closing a tab</string>
     <string name="tb_undo_sum">Show a short "Undo" after a tab closes</string>
+    <string name="crash_title">Last run crashed</string>
+    <string name="crash_clear">Clear</string>
 </resources>

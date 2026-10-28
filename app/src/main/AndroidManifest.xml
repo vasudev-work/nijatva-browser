@@ -59,7 +59,6 @@
         <activity android:name=".AutofillActivity" android:exported="false" android:label="@string/r_autofill" />
         <activity android:name=".AIActivity" android:exported="false" android:label="@string/ai_title" />
         <activity android:name=".AboutActivity" android:exported="false" android:label="@string/about_title" />
-        <activity android:name="in.nijatva.browser.appstore.SettingsUIActivity" android:exported="false" android:label="@string/advanced_settings" />
         <activity android:name=".ExtensionsActivity" android:exported="false" android:label="@string/r_extensions" />
         <activity android:name=".AdvancedActivity" android:exported="false" android:label="@string/r_power" />
         <activity android:name=".PrivacyActivity" android:exported="false" android:label="@string/r_privacy_dashboard" />

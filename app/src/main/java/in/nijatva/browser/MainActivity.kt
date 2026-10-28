@@ -396,13 +396,37 @@ document.open();document.write(h);document.close();
             }
         })
 
-        loadContainer(active!!)
+        val startContainer = active
+        if (startContainer != null) loadContainer(startContainer) else newTab(ntpUrl())
         openFromIntent(intent)
+        showLastCrashIfAny()
 
         if (intent?.getStringExtra("show") == "containers") {
             intent.removeExtra("show")
             try { showContainers() } catch (_: Exception) { }
         }
+    }
+
+    /**
+     * If the previous run died, say so instead of hiding it: the stack trace is
+     * more useful on screen than in a file nobody opens.
+     */
+    private fun showLastCrashIfAny() {
+        try {
+            val f = java.io.File(filesDir, "crash.log")
+            if (!f.exists()) return
+            val txt = f.readText()
+            if (txt.isBlank()) return
+            val stamp = txt.takeLast(200).hashCode().toString()
+            if (prefs.getString("crash_seen", "") == stamp) return
+            prefs.edit().putString("crash_seen", stamp).apply()
+            AlertDialog.Builder(this)
+                .setTitle(R.string.crash_title)
+                .setMessage(txt.takeLast(2400))
+                .setPositiveButton(android.R.string.ok, null)
+                .setNeutralButton(R.string.crash_clear) { _, _ -> try { f.delete() } catch (_: Exception) { } }
+                .show()
+        } catch (_: Exception) { }
     }
 
     /** Opens a link, or runs a search, handed over by another app. */

@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nijatva</title>
 <style>
-  :root{--bg:#0B0E12;--surf:#161B21;--surf2:#1E242C;--fg:#F2F4F7;--mut:#9BA3AE;--brand:#FF6600;--line:#262C34}
+  :root{--bg:#121212;--surf:#1A1C1C;--surf2:#23272B;--fg:#FFFFFF;--mut:#A8B0B8;--brand:#3B82F6;--line:#2E3338}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--fg);-webkit-user-select:none;
     font-family:-apple-system,Roboto,"Segoe UI",Arial,sans-serif}
@@ -43,14 +43,14 @@
   body{animation:in .22s ease both}
   @keyframes in{from{opacity:0}to{opacity:1}}
   body.incognito{background:#000}
-  body.incognito .avatar{background:#1F1F2A}
-  body.incognito .pill{border-color:#7C4DFF;background:#1F1F2A;color:#fff}
-  body.incognito .search{background:#16171D}
-  .notice{background:#1C1D24;border-radius:20px;padding:24px 18px 18px;margin:20px 16px 8px;text-align:center}
+  body.incognito .avatar{background:#23272B}
+  body.incognito .pill{border-color:#22D3EE;background:#23272B;color:#fff}
+  body.incognito .search{background:#1A1C1C}
+  .notice{background:#22262A;border-radius:20px;padding:24px 18px 18px;margin:20px 16px 8px;text-align:center}
   .notice h3{color:#fff;font-size:17px;margin:14px 0 14px;font-weight:700}
   .notice ul{list-style:none;padding:0;margin:0;text-align:left}
-  .notice li{color:#A0A0A0;font-size:13px;line-height:1.6;margin:0 0 11px;padding-left:18px;position:relative}
-  .notice li:before{content:"\2022";position:absolute;left:2px;color:#7C4DFF;font-size:16px;line-height:1}
+  .notice li{color:#A8B0B8;font-size:13px;line-height:1.6;margin:0 0 11px;padding-left:18px;position:relative}
+  .notice li:before{content:"\2022";position:absolute;left:2px;color:#22D3EE;font-size:16px;line-height:1}
 </style></head>
 <body>
   <div class="top">
@@ -104,7 +104,7 @@
   </form>
 
   <div class="notice" id="incog" style="display:none">
-    <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#7C4DFF" stroke-width="1.6"
+    <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="1.6"
          stroke-linecap="round" stroke-linejoin="round">
       <path d="M4 7h16"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/>
       <circle cx="8" cy="13" r="2.6"/><circle cx="16" cy="13" r="2.6"/><path d="M10.6 13h2.8"/>
@@ -150,7 +150,7 @@
       if (q) q.placeholder = 'Search privately or type URL';
       document.getElementById('modename').textContent = 'Private Browsing';
       document.getElementById('avatar').innerHTML =
-        '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7C4DFF" stroke-width="1.6"' +
+        '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="1.6"' +
         ' stroke-linecap="round" stroke-linejoin="round">' +
         '<path d="M4 7h16"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/>' +
         '<circle cx="8" cy="13" r="2.6"/><circle cx="16" cy="13" r="2.6"/><path d="M10.6 13h2.8"/></svg>';
