@@ -1,4 +1,4 @@
-package in.nijatva.browser
+package `in`.nijatva.browser
 
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable

@@ -1,4 +1,4 @@
-package in.nijatva.browser
+package `in`.nijatva.browser
 
 import android.view.Gravity
 import android.widget.EditText

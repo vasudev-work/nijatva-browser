@@ -1,4 +1,4 @@
-package in.nijatva.browser
+package `in`.nijatva.browser
 
 import android.provider.OpenableColumns
 import android.widget.LinearLayout

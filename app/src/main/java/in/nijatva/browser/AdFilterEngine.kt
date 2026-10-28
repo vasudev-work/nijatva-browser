@@ -1,4 +1,4 @@
-package in.nijatva.browser
+package `in`.nijatva.browser
 
 import android.content.Context
 import java.util.concurrent.atomic.AtomicBoolean

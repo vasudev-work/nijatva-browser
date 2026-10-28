@@ -1,29 +1,18 @@
-package in.nijatva.browser
+package `in`.nijatva.browser
 
 import android.app.Application
-import in.nijatva.browser.appstore.SettingsConfig
 
 /**
- * Installs the reusable Vasu Settings module so its screens adopt Nijatva's
- * identity and brand palette instead of the module defaults.
+ * Application setup: Material You when the device asks for it, plus a small
+ * crash log the Diagnostics screen can read back.
+ *
+ * The old build also configured a shared settings-UI module (SettingsConfig).
+ * That module is not part of this repository, so the dependency is gone; the
+ * app's own theme attributes carry the branding instead.
  */
 class NijatvaApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        val c = SettingsConfig()
-        c.appName = "Nijatva"
-        c.developerName = "Vasudev Danganya"
-        c.developerEmail = "Vasudev.work@rediffmail.com"
-        c.github = "https://github.com/vasudev-work"
-        c.upiId = "Vasudevupi@upi"
-        c.upiPayee = "Vasudev"
-        c.accent = 0xFFFF6600.toInt()
-        c.darkBackground = 0xFF0B0E12.toInt()
-        c.darkSurface = 0xFF161B21.toInt()
-        c.lightBackground = 0xFFF4F6F8.toInt()
-        c.lightSurface = 0xFFFFFFFF.toInt()
-        c.cornerRadiusDp = 20
-        SettingsConfig.install(c)
 
         // Material You, when the device and the user both want it
         try {
