@@ -32,6 +32,15 @@ class ToolbarActivity : BaseSettingsActivity() {
         b.divider(c3)
         b.switchRow(c3, getString(R.string.tb_focus), getString(R.string.tb_focus_sum),
             prefs.getBoolean("focus_mode", false)) { _, on -> prefs.edit().putBoolean("focus_mode", on).apply() }
+        b.divider(c3)
+        b.switchRow(c3, getString(R.string.tb_show_title), getString(R.string.tb_show_title_sum),
+            prefs.getBoolean("url_show_title", false)) { _, on ->
+            prefs.edit().putBoolean("url_show_title", on).apply()
+            recreate()
+        }
+        b.divider(c3)
+        b.switchRow(c3, getString(R.string.tb_undo), getString(R.string.tb_undo_sum),
+            prefs.getBoolean("undo_toast", true)) { _, on -> prefs.edit().putBoolean("undo_toast", on).apply() }
     }
 
     private fun set(key: String, value: String) {

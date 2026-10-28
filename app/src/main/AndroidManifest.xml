@@ -33,6 +33,21 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Links from other apps, and the system's default-browser choice -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+            </intent-filter>
+
+            <!-- "Search the web" hand-offs -->
+            <intent-filter>
+                <action android:name="android.intent.action.WEB_SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <activity android:name=".SettingsActivity" android:exported="false" android:label="@string/settings_title" />

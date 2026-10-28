@@ -705,4 +705,10 @@
     <string name="love">Nijatva is a privacy-first, local-only browser. Thank you for using it \u2014 it is kept alive by your support and feedback.</string>
     <string name="copy_upi">Tap to copy UPI ID</string>
     <string name="email_us">Tap to email us</string>
+    <string name="tab_closed">Tab closed</string>
+    <string name="undo">Undo</string>
+    <string name="tb_show_title">Show page title in the bar</string>
+    <string name="tb_show_title_sum">The address bar shows the title instead of the URL</string>
+    <string name="tb_undo">Undo after closing a tab</string>
+    <string name="tb_undo_sum">Show a short "Undo" after a tab closes</string>
 </resources>

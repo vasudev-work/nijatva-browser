@@ -397,11 +397,31 @@ document.open();document.write(h);document.close();
         })
 
         loadContainer(active!!)
+        openFromIntent(intent)
 
         if (intent?.getStringExtra("show") == "containers") {
             intent.removeExtra("show")
             try { showContainers() } catch (_: Exception) { }
         }
+    }
+
+    /** Opens a link, or runs a search, handed over by another app. */
+    private fun openFromIntent(intent: Intent?): Boolean {
+        val i = intent ?: return false
+        try {
+            if (i.action == Intent.ACTION_VIEW) {
+                val u = i.dataString ?: return false
+                if (u.startsWith("http")) { newTab(u); return true }
+                return false
+            }
+            if (i.action == Intent.ACTION_WEB_SEARCH) {
+                val q = i.getStringExtra("query") ?: return false
+                if (q.isBlank()) return false
+                newTab(searchBase + Uri.encode(q))
+                return true
+            }
+        } catch (_: Exception) { }
+        return false
     }
 
     private fun readPrefs() {
@@ -773,6 +793,7 @@ document.open();document.write(h);document.close();
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        if (openFromIntent(intent)) return
         if (intent?.getStringExtra("show") == "containers") {
             intent.removeExtra("show")
             try { showContainers() } catch (_: Exception) { }
@@ -1156,13 +1177,26 @@ document.open();document.write(h);document.close();
         } else {
             showTab(Math.max(0, Math.min(i, tabs.size - 1)))
         }
+        if (prefs.getBoolean("undo_toast", true) && u != null && u.startsWith("http")) {
+            try {
+                com.google.android.material.snackbar.Snackbar
+                    .make(findViewById(android.R.id.content), getString(R.string.tab_closed), 4000)
+                    .setAction(getString(R.string.undo)) { newTab(u) }
+                    .show()
+            } catch (_: Exception) { }
+        }
     }
 
     private fun updateUrl() {
         val w = cur() ?: return
         val u = w.url
         if (u != null) {
-            urlBar.setText(if (u.startsWith(HOME_ASSET)) "" else u)
+            val title = w.title
+            val showTitle = prefs.getBoolean("url_show_title", false)
+            urlBar.setText(
+                if (u.startsWith(HOME_ASSET)) ""
+                else if (showTitle && !title.isNullOrBlank()) title
+                else u)
             updateLock(u)
         }
         applyChrome()
