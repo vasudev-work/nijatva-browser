@@ -101,7 +101,7 @@ class DiagnosticsActivity : BaseSettingsActivity() {
             answered = true
             val ready = status == android.speech.tts.TextToSpeech.SUCCESS
             val voices = try { engine?.voices?.size ?: 0 } catch (_: Exception) { 0 }
-            val engines = try { android.speech.tts.TextToSpeech.getEngines()?.size ?: 0 } catch (_: Exception) { 0 }
+            val engines = try { engine?.engines?.size ?: 0 } catch (_: Exception) { 0 }
             val ms = System.currentTimeMillis() - t0
             val sb = StringBuilder()
             sb.append("engine ready: ").append(ready).append('\n')
