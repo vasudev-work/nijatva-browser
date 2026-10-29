@@ -12,10 +12,16 @@ import java.util.Locale
  * Android WebView does not implement the Web Speech API, so any page that calls
  * window.speechSynthesis.speak() fails with "Speech synthesis not supported".
  * This bridge stands in for it: the shim in [SHIM] installs a speechSynthesis
- * object in the page, and every call comes here to the device's own TTS engine.
+ * object in the page before the page's own scripts run, and every call lands
+ * here on the device's own TextToSpeech engine.
  *
- * The real end-of-speech callback is passed back into the page, so scripts that
- * chain utterances (read the next paragraph when this one finishes) behave.
+ * Three things make it behave like the real API rather than a toy:
+ *  - the engine's real voice list is handed to getVoices(), so a site that picks
+ *    a voice by name finds it;
+ *  - long text is split into sentence-sized pieces and queued, so a whole
+ *    article survives instead of dying partway;
+ *  - the genuine end-of-speech callback is passed back, so scripts that chain
+ *    utterance after utterance keep going.
  */
 class SpeechBridge(webView: WebView) {
 
@@ -24,30 +30,39 @@ class SpeechBridge(webView: WebView) {
     private var started = false
     private var failed = false
     private var pending: String? = null
+    private var lastUtterance = ""
+
+    private fun ctx(): Context? = view.get()?.context
+
+    private fun prefs() = ctx()?.getSharedPreferences(MainActivity.PREFS, Context.MODE_PRIVATE)
 
     private fun attach() {
         if (tts != null) return
+        val c = ctx() ?: return
         try {
-            tts = TextToSpeech(view.get()?.context ?: return) { status ->
+            tts = TextToSpeech(c) { status ->
                 started = status == TextToSpeech.SUCCESS
                 failed = !started
-                if (started) {
-                    try {
-                        tts?.language = Locale.getDefault()
-                        tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-                            override fun onStart(id: String?) { }
-                            override fun onError(id: String?) { finish(false) }
-                            override fun onDone(id: String?) { finish(true) }
-                        })
-                    } catch (_: Exception) { }
-                    pending?.let { say(it, "", 1f, 1f) }
-                    pending = null
-                }
+                if (!started) return@TextToSpeech
+                try {
+                    tts?.language = Locale.getDefault()
+                    tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                        override fun onStart(id: String?) { }
+                        override fun onError(id: String?) { finish(false) }
+                        override fun onDone(id: String?) {
+                            // only the last piece of a split utterance ends the speech
+                            if (id == null || id == lastUtterance) finish(true)
+                        }
+                    })
+                } catch (_: Exception) { }
+                pending?.let { say(it, "", 1f, 1f) }
+                pending = null
             }
         } catch (_: Exception) { failed = true }
     }
 
     private fun finish(ok: Boolean) {
+        try { KeepAlive.stop() } catch (_: Exception) { }
         try {
             view.get()?.post {
                 try {
@@ -58,6 +73,26 @@ class SpeechBridge(webView: WebView) {
         } catch (_: Exception) { }
     }
 
+    /** Sentence-sized pieces, so a long article does not break halfway. */
+    private fun pieces(text: String, max: Int = 280): List<String> {
+        if (text.length <= max) return listOf(text)
+        val out = ArrayList<String>()
+        var rest = text
+        while (rest.length > max) {
+            var cut = -1
+            for (i in max downTo max / 2) {
+                val c = rest[i]
+                if (c == '.' || c == '!' || c == '?' || c == ';' || c == '\n') { cut = i + 1; break }
+            }
+            if (cut <= 0) for (i in max downTo max / 2) if (rest[i] == ' ') { cut = i + 1; break }
+            if (cut <= 0) cut = max
+            out.add(rest.substring(0, cut))
+            rest = rest.substring(cut)
+        }
+        if (rest.isNotEmpty()) out.add(rest)
+        return out
+    }
+
     private fun say(text: String, lang: String, rate: Float, pitch: Float) {
         if (text.isBlank() || tts == null) return
         try {
@@ -65,9 +100,19 @@ class SpeechBridge(webView: WebView) {
                 val l = Locale.forLanguageTag(lang)
                 if (tts?.isLanguageAvailable(l) == TextToSpeech.LANG_AVAILABLE) tts?.language = l
             }
-            tts?.setSpeechRate(if (rate in 0.2f..4f) rate else 1f)
+            // a site that asks for normal speed gets the reader's own preference
+            val prefRate = try { prefs()?.getFloat("tts_rate", 1.0f) ?: 1.0f } catch (_: Exception) { 1.0f }
+            val useRate = if (rate in 0.2f..4f) (if (rate == 1f) prefRate else rate) else prefRate
+            tts?.setSpeechRate(useRate)
             tts?.setPitch(if (pitch in 0.2f..4f) pitch else 1f)
-            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "nijatva-web")
+            try { KeepAlive.start(ctx() ?: return) } catch (_: Exception) { }
+
+            val parts = pieces(text)
+            lastUtterance = "nijatva-web-" + (parts.size - 1)
+            parts.forEachIndexed { i, p ->
+                tts?.speak(p, if (i == 0) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD,
+                    null, "nijatva-web-" + i)
+            }
         } catch (_: Exception) { }
     }
 
@@ -81,13 +126,58 @@ class SpeechBridge(webView: WebView) {
     }
 
     @JavascriptInterface
-    fun stop() { try { tts?.stop() } catch (_: Exception) { } }
+    fun stop() {
+        try { tts?.stop() } catch (_: Exception) { }
+        try { KeepAlive.stop() } catch (_: Exception) { }
+    }
 
-    @JavascriptInterface
-    fun pause() { try { tts?.stop() } catch (_: Exception) { } }
+    @JavascriptInterface fun pause() { stop() }
+    @JavascriptInterface fun resume() { }
 
+    /** The engine's real voices, as the shape getVoices() is meant to return. */
     @JavascriptInterface
-    fun resume() { }
+    fun voicesJson(): String {
+        attach()
+        val sb = StringBuilder("[")
+        var first = true
+        try {
+            val voices = tts?.voices ?: emptySet()
+            for (v in voices) {
+                val name = v.name ?: continue
+                val tag = try { v.locale?.toLanguageTag() ?: "" } catch (_: Exception) { "" }
+                if (!first) sb.append(',')
+                sb.append("{\"voiceURI\":").append(q(name))
+                    .append(",\"name\":").append(q(name))
+                    .append(",\"lang\":").append(q(tag))
+                    .append(",\"localService\":").append(!v.isNetworkConnectionRequired)
+                    .append(",\"default\":").append(first)
+                    .append(",\"voice\":true}")
+                first = false
+            }
+        } catch (_: Exception) { }
+        return sb.append("]").toString()
+    }
+
+    /** For the diagnostics screen: is the engine up, and how many voices. */
+    @JavascriptInterface
+    fun infoJson(): String {
+        attach()
+        val count = try { tts?.voices?.size ?: 0 } catch (_: Exception) { 0 }
+        return "{\"ready\":" + started + ",\"voices\":" + count + ",\"failed\":" + failed + "}"
+    }
+
+    private fun q(s: String): String {
+        val sb = StringBuilder("\"")
+        for (c in s) when (c) {
+            '"' -> sb.append("\\\"")
+            '\\' -> sb.append("\\\\")
+            '\n' -> sb.append("\\n")
+            '\r' -> sb.append("\\r")
+            '\t' -> sb.append("\\t")
+            else -> if (c < ' ') sb.append(' ') else sb.append(c)
+        }
+        return sb.append('"').toString()
+    }
 
     companion object {
         /**
@@ -97,17 +187,19 @@ class SpeechBridge(webView: WebView) {
         val SHIM: String = """
 (function(){
   try{
-    if (window.speechSynthesis && window.speechSynthesis.speak && !window.speechSynthesis.__nijatva) return;
+    if (window.speechSynthesis && window.speechSynthesis.speak && window.speechSynthesis.__nijatva) return;
     var B = window.NijatvaSpeech;
     if (!B) return;
     function U(t){
       this.text = t || ''; this.lang = ''; this.rate = 1; this.pitch = 1; this.volume = 1;
+      this.voice = null;
       this.onstart = null; this.onend = null; this.onerror = null;
       this.onpause = null; this.onresume = null; this.onboundary = null;
     }
     if (!window.SpeechSynthesisUtterance) window.SpeechSynthesisUtterance = U;
-    var voices = [{name:'Nijatva', lang:(navigator.language||'en'), localService:true,
-                   'default':true, voiceURI:'nijatva', voice:true}];
+    var fallback = [{voiceURI:'nijatva', name:'Nijatva', lang:(navigator.language||'en'),
+                     localService:true, 'default':true, voice:true}];
+    var list = [];
     var cur = null;
     var S = {
       __nijatva: true,
@@ -117,7 +209,8 @@ class SpeechBridge(webView: WebView) {
           var txt = (u && u.text) || '';
           if (!txt) return;
           cur = u;
-          B.speak(txt, (u && u.lang) || '', (u && u.rate) || 1, (u && u.pitch) || 1);
+          var lang = (u && u.lang) || (u && u.voice && u.voice.lang) || '';
+          B.speak(txt, lang, (u && u.rate) || 1, (u && u.pitch) || 1);
           S.speaking = true; S.paused = false; S.pending = false;
           if (u && u.onstart) setTimeout(function(){ try{ u.onstart({}) }catch(e){} }, 0);
         }catch(e){}
@@ -125,7 +218,7 @@ class SpeechBridge(webView: WebView) {
       cancel: function(){ try{ B.stop() }catch(e){} S.speaking = false; cur = null; },
       pause: function(){ try{ B.pause() }catch(e){} S.paused = true; },
       resume: function(){ try{ B.resume() }catch(e){} S.paused = false; },
-      getVoices: function(){ return voices; },
+      getVoices: function(){ return list.length ? list : fallback; },
       addEventListener: function(){}, removeEventListener: function(){}
     };
     window.__nijatvaSpeechDone = function(ok){
@@ -137,6 +230,16 @@ class SpeechBridge(webView: WebView) {
     };
     try { Object.defineProperty(window, 'speechSynthesis', {value:S, configurable:true}); }
     catch(e){ window.speechSynthesis = S; }
+    /* the engine's own voices, once they are available */
+    try{
+      var raw = B.voicesJson();
+      if (raw && raw.length > 2) list = JSON.parse(raw) || [];
+    }catch(e){}
+    setTimeout(function(){
+      if (!list.length) { try{ var r2 = B.voicesJson(); if (r2 && r2.length > 2) list = JSON.parse(r2) || []; }catch(e){} }
+      if (S.onvoiceschanged) { try{ S.onvoiceschanged({type:'voiceschanged'}) }catch(e){} }
+      try{ document.dispatchEvent(new Event('voiceschanged')); }catch(e){}
+    }, 250);
   }catch(e){}
 })();
 """.trimIndent()
