@@ -12,8 +12,9 @@ class ContainerStore(context: Context) {
     private val prefs: SharedPreferences =
         context.getSharedPreferences("nijatva_containers", Context.MODE_PRIVATE)
 
+    /** Container colours, taken from the GBWB palette so the app stays in one family. */
     val palette = listOf(
-        "#FF6600", "#8CC63F", "#3B82F6", "#A855F7", "#EF4444", "#14B8A6"
+        "#2A9CF0", "#0C9054", "#90EA48", "#1EE4F6", "#1248B4", "#1E8484"
     )
 
     fun getContainers(): List<Container> {

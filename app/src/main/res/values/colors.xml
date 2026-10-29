@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ===== Nijatva brand: Green, Blue, White, Black (GBWB) ===== -->
+    <!-- ===== GBWB palette: Green, Blue, White, Black ===== -->
+    <!-- Sampled from the palette sheet. Its printed hex labels are wrong in places
+         (Charcoal Grey is labelled #1A9C4C, which is a green), so these are the
+         values the swatches actually are. -->
+    <color name="nij_forest_green">#124E2A</color>   <!-- Forest Green -->
+    <color name="nij_emerald">#0C9054</color>   <!-- Emerald Green -->
+    <color name="nij_teal">#1E8484</color>   <!-- Teal -->
+    <color name="nij_mint">#8AE4BA</color>   <!-- Mint Green -->
+    <color name="nij_lime">#90EA48</color>   <!-- Lime Green -->
+    <color name="nij_navy">#063678</color>   <!-- Navy Blue -->
+    <color name="nij_royal">#1248B4</color>   <!-- Royal Blue -->
+    <color name="nij_azure">#2A9CF0</color>   <!-- Azure -->
+    <color name="nij_sky">#84CCF6</color>   <!-- Sky Blue -->
+    <color name="nij_cyan">#1EE4F6</color>   <!-- Cyan -->
+    <color name="nij_matte_black">#121212</color>   <!-- Matte Black -->
+    <color name="nij_charcoal">#363C42</color>   <!-- Charcoal Grey -->
+    <color name="nij_slate">#485460</color>   <!-- Slate -->
+    <color name="nij_silver">#BAC0C0</color>   <!-- Silver Grey -->
+    <color name="nij_white">#FFFFFF</color>   <!-- Pure White -->
+
+    <!-- ===== Roles, resolved against the palette above ===== -->
     <color name="bg">#FF121212</color>
-    <color name="surface">#FF1A1C1C</color>
-    <color name="surface2">#FF23272B</color>
-    <color name="divider">#FF2E3338</color>
-    <color name="brand_orange">#FF3B82F6</color>   <!-- Azure blue: the primary accent (resource name kept for compatibility) -->
-    <color name="brand_green">#FF22C55E</color>   <!-- Emerald green: the secondary accent -->
+    <color name="surface">#FF1A1D21</color>
+    <color name="surface2">#FF363C42</color>
+    <color name="divider">#FF2B3035</color>
+    <color name="brand_orange">#FF2A9CF0</color>   <!-- Azure: the primary accent (resource name kept for compatibility) -->
+    <color name="brand_green">#FF0C9054</color>   <!-- Emerald: the secondary accent -->
     <color name="text_primary">#FFFFFFFF</color>
-    <color name="text_secondary">#FFA8B0B8</color>
+    <color name="text_secondary">#FFBAC0C0</color>
 
     <color name="light_bg">#FFF4F6F8</color>
     <color name="light_surface">#FFFFFFFF</color>
