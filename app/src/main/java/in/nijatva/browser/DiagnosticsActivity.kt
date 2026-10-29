@@ -31,6 +31,11 @@ class DiagnosticsActivity : BaseSettingsActivity() {
             else if (TtsReader.isActive()) getString(R.string.dg_paused) else getString(R.string.dg_off), null)
         b.divider(c)
         b.valueRow(c, getString(R.string.dg_rules), "" + AdFilterEngine.ruleCount(), null)
+        b.divider(c)
+        b.navRow(c, getString(R.string.dg_speech), getString(R.string.dg_speech_sum),
+            android.view.View.OnClickListener {
+                probeSpeech { info -> showDialog(getString(R.string.dg_speech), info) }
+            })
 
         b.divider(c)
         b.valueRow(c, getString(R.string.dg_crash), crashInfo(), null)
@@ -84,4 +89,38 @@ class DiagnosticsActivity : BaseSettingsActivity() {
         val kb = info.firstOrNull()?.totalPss ?: 0
         (kb / 1024).toString() + " MB"
     } catch (_: Exception) { "?" }
+
+    /** engineReady, how many engines and voices, and how long the engine took. */
+    private fun probeSpeech(done: (String) -> Unit) {
+        val t0 = System.currentTimeMillis()
+        var engine: android.speech.tts.TextToSpeech? = null
+        var answered = false
+
+        fun report(status: Int) {
+            if (answered) return
+            answered = true
+            val ready = status == android.speech.tts.TextToSpeech.SUCCESS
+            val voices = try { engine?.voices?.size ?: 0 } catch (_: Exception) { 0 }
+            val engines = try { android.speech.tts.TextToSpeech.getEngines(this)?.size ?: 0 } catch (_: Exception) { 0 }
+            val ms = System.currentTimeMillis() - t0
+            val sb = StringBuilder()
+            sb.append("engine ready: ").append(ready).append('\n')
+            sb.append("engines installed: ").append(engines).append('\n')
+            sb.append("voices available: ").append(voices).append('\n')
+            sb.append("start-up time: ").append(ms).append(" ms")
+            try { engine?.shutdown() } catch (_: Exception) { }
+            done(sb.toString())
+        }
+
+        try {
+            engine = android.speech.tts.TextToSpeech(this) { status -> report(status) }
+        } catch (e: Exception) {
+            if (!answered) { answered = true; done("TextToSpeech could not be started: " + (e.message ?: "")) }
+        }
+    }
+
+    private fun showDialog(title: String, message: String) {
+        androidx.appcompat.app.AlertDialog.Builder(this).setTitle(title).setMessage(message)
+            .setPositiveButton(android.R.string.ok, null).show()
+    }
 }

@@ -107,7 +107,9 @@ class SpeechBridge(webView: WebView) {
             tts?.setPitch(if (pitch in 0.2f..4f) pitch else 1f)
             try { KeepAlive.start(ctx() ?: return) } catch (_: Exception) { }
 
-            val parts = pieces(text)
+            // a page-wide switch: some engines behave better with one long utterance
+            val chunk = try { prefs()?.getBoolean("tts_chunk", true) ?: true } catch (_: Exception) { true }
+            val parts = if (chunk) pieces(text) else listOf(text)
             lastUtterance = "nijatva-web-" + (parts.size - 1)
             parts.forEachIndexed { i, p ->
                 tts?.speak(p, if (i == 0) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD,

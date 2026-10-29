@@ -146,6 +146,9 @@ document.addEventListener('click',done,true);
 document.addEventListener('touchend',done,true);
 }catch(e){}})()"""
 
+        /** 800+ characters and 4+ paragraphs, or the page is not an article. */
+        const val PAGE_GUARD_JS = "(function(){try{var el=document.querySelector('article')||document.querySelector('main')||document.body;if(!el)return false;var t=el.innerText||'';var chars=t.replace(/\\s+/g,' ').trim().length;var ps=el.querySelectorAll('p').length;return chars>=800&&ps>=4;}catch(e){return false;}})()"
+
         const val EXTRACT_JS = "(function(){try{var el=document.querySelector('article')||document.querySelector('main')||document.body;var t=(el&&el.innerText)||'';t=t.replace(/\\s+/g,' ').trim();return t.slice(0,200000);}catch(e){return '';}})()"
 
         const val READER_JS = """(function(){try{
@@ -2694,7 +2697,13 @@ document.open();document.write(h);document.close();
     }
 
     private fun readerMode() {
-        cur()?.evaluateJavascript(readerJs(), null)
+        val w = cur() ?: return
+        // the reader is for articles; a home or login page has nothing to reformat
+        w.evaluateJavascript(PAGE_GUARD_JS) { js ->
+            val ok = try { org.json.JSONTokener(js).nextValue() as? Boolean ?: false } catch (_: Exception) { false }
+            if (!ok) { toast(getString(R.string.rd_no_article)); return@evaluateJavascript }
+            try { w.evaluateJavascript(readerJs(), null) } catch (_: Exception) { }
+        }
     }
 
     private fun addToHomeScreen() {

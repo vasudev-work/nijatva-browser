@@ -716,4 +716,9 @@
     <string name="st_essentials">Essentials</string>
     <string name="st_all_settings">All settings</string>
     <string name="st_all_settings_sub">%1$d more, grouped and A to Z</string>
+    <string name="rd_chunk">Split long text into pieces</string>
+    <string name="rd_chunk_sum">Keeps a long article speaking to the end; turn off if speech stops midway</string>
+    <string name="rd_no_article">This page has no article to read</string>
+    <string name="dg_speech">Speech engine</string>
+    <string name="dg_speech_sum">Ready state, voice count and start-up time</string>
 </resources>

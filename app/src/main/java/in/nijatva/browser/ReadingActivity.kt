@@ -60,6 +60,11 @@ class ReadingActivity : BaseSettingsActivity() {
             prefs.getBoolean("keep_screen_on", false)) { _, on ->
             prefs.edit().putBoolean("keep_screen_on", on).apply()
         }
+        b.divider(c)
+        b.switchRow(c, getString(R.string.rd_chunk), getString(R.string.rd_chunk_sum),
+            prefs.getBoolean("tts_chunk", true)) { _, on ->
+            prefs.edit().putBoolean("tts_chunk", on).apply()
+        }
         b.section(getString(R.string.rd_visual))
         val v = b.card()
         b.switchRow(v, getString(R.string.rd_eink), getString(R.string.rd_eink_sum),
