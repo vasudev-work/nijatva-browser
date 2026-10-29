@@ -1093,6 +1093,7 @@ document.open();document.write(h);document.close();
         try { w.addJavascriptInterface(MediaBridge(), "NijatvaMedia") } catch (_: Exception) { }
         try { w.addJavascriptInterface(BlockBridge(), "NijatvaBlock") } catch (_: Exception) { }
         try { w.addJavascriptInterface(GmBridge(), "NijatvaGM") } catch (_: Exception) { }
+        try { w.addJavascriptInterface(SpeechBridge(w), "NijatvaSpeech") } catch (_: Exception) { }
         w.layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         val s = w.settings
@@ -1825,6 +1826,8 @@ document.open();document.write(h);document.close();
     private inner class BrowserClient : WebViewClient() {
         override fun onPageStarted(v: WebView?, url: String?, fav: android.graphics.Bitmap?) {
             if (v == cur()) progress.visibility = View.VISIBLE
+            // before the page's own scripts, so feature detection sees it
+            try { v?.evaluateJavascript(SpeechBridge.SHIM, null) } catch (_: Exception) { }
             if (url != null) injectExtensions(v, url, true)
         }
 
