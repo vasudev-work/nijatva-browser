@@ -32,6 +32,14 @@
       "pattern": "*github.com*",
       "file": "wide-github.js",
       "version": "1.0"
+    },
+    {
+      "id": "search-by-image",
+      "name": "Search by image",
+      "desc": "Reverse image search from any picture",
+      "pattern": "*",
+      "file": "search-by-image.js",
+      "version": "1.0"
     }
   ]
 }

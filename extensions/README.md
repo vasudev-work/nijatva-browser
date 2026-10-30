@@ -45,3 +45,8 @@ bundled filter lists. What a userscript can add on top is the cleanup:
 
 These scripts are original work for this repository. Nothing here is copied from
 uBlock or any other GPL project.
+
+`search-by-image.js` is the one exception worth naming: it reuses the *engine URL
+templates* (the shape of each engine's search URL) from dessant/search-by-image,
+which is GPL-3.0. Its code is written here. If you would rather not carry that
+provenance, replace the `ENGINES` list at the top of the file with your own URLs.
