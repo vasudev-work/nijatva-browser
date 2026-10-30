@@ -7,7 +7,8 @@
       "desc": "Delete the empty rectangles left behind after ads are blocked",
       "pattern": "*",
       "file": "cosmetic-cleanup.js",
-      "version": "1.0"
+      "version": "1.0",
+      "category": "Privacy"
     },
     {
       "id": "hide-shorts",
@@ -15,7 +16,8 @@
       "desc": "Remove the Shorts shelves from YouTube",
       "pattern": "*youtube.com*",
       "file": "hide-shorts.js",
-      "version": "1.0"
+      "version": "1.0",
+      "category": "YouTube"
     },
     {
       "id": "stop-autoplay",
@@ -23,7 +25,8 @@
       "desc": "Pause videos that start on their own; a tap still plays them",
       "pattern": "*",
       "file": "stop-autoplay.js",
-      "version": "1.0"
+      "version": "1.0",
+      "category": "Productivity"
     },
     {
       "id": "wide-github",
@@ -31,15 +34,8 @@
       "desc": "Use the full window width on GitHub",
       "pattern": "*github.com*",
       "file": "wide-github.js",
-      "version": "1.0"
-    },
-    {
-      "id": "search-by-image",
-      "name": "Search by image",
-      "desc": "Reverse image search from any picture",
-      "pattern": "*",
-      "file": "search-by-image.js",
-      "version": "1.0"
+      "version": "1.0",
+      "category": "Developer Tools"
     }
   ]
 }

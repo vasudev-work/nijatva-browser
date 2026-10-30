@@ -1763,7 +1763,15 @@ document.open();document.write(h);document.close();
             "addshortcut" -> startActivity(Intent(this, HomeShortcutsActivity::class.java))
             "voice" -> voiceSearch()
             "mute" -> toggleMediaMute()
-            "store" -> go("file:///android_asset/store.html")
+            "store" -> {
+                // hand the store the ids already installed, so it can say so
+                val have = try {
+                    ExtensionStore(this).getAll().joinToString(",") { it.id }
+                } catch (_: Exception) { "" }
+                go("file:///android_asset/store.html?installed=" + Uri.encode(have))
+            }
+            "appearance" -> startActivity(Intent(this, AppearanceActivity::class.java))
+            "settings" -> startActivity(Intent(this, SettingsActivity::class.java))
             "install" -> {
                 val script = uri.getQueryParameter("u")
                 if (!script.isNullOrBlank()) {

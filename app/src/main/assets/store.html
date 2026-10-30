@@ -1,141 +1,325 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en" data-theme="dark"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Extensions</title>
+<title>Nijatva Web Store</title>
 <style>
-  :root{--bg:#121212;--surf:#1A1C1C;--surf2:#23272B;--fg:#fff;--mut:#A8B0B8;--brand:#2A9CF0;--line:#2E3338;
-        --ease:cubic-bezier(.2,.8,.2,1)}
+  :root{
+    --bg:#202124; --surf:#292a2d; --surf2:#35363a; --line:#3c4043;
+    --fg:#e8eaed; --mut:#9aa0a6; --brand:#1a73e8; --brand-fg:#fff;
+    --chip:#3c4043; --star:#fbbc04;
+    --ease:cubic-bezier(.2,.8,.2,1);
+  }
+  html[data-theme="light"]{
+    --bg:#fff; --surf:#f8f9fa; --surf2:#eef0f3; --line:#dadce0;
+    --fg:#202124; --mut:#5f6368; --brand:#1a73e8; --chip:#f1f3f4;
+  }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,Roboto,"Segoe UI",Arial,sans-serif;
-       padding:18px 16px 40px;animation:fade .25s var(--ease) both}
-  h1{font-size:22px;margin:0 0 3px;letter-spacing:-.3px}
-  .lead{color:var(--mut);font-size:13px;margin:0 0 16px}
-  .row{display:flex;gap:10px;align-items:center;margin:0 0 18px}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:15px/1.5 -apple-system,Roboto,"Segoe UI",Arial,sans-serif;
+       padding-bottom:40px;animation:fade .25s var(--ease) both}
+  a{color:inherit}
+  /* ---------- header ---------- */
+  .hdr{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+  .hdr-in{display:flex;align-items:center;gap:10px;padding:12px 14px}
+  .round{width:42px;height:42px;border-radius:50%;border:0;background:transparent;color:var(--fg);
+         display:flex;align-items:center;justify-content:center;transition:background .16s}
+  .round:active{background:var(--surf2)}
+  .logo{width:38px;height:38px;border-radius:50%;flex:none;
+        background:conic-gradient(from 210deg,#f5a623,#e2543a,#c13584,#7b4bff,#1a73e8,#f5a623);
+        display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px}
   .search{flex:1;display:flex;align-items:center;gap:9px;background:var(--surf2);border-radius:22px;
-          padding:12px 16px;border:1.5px solid transparent;transition:border-color .2s,box-shadow .2s}
-  .search:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(42,156,240,.2)}
-  .search input{flex:1;background:transparent;border:0;outline:none;color:var(--fg);font-size:15px}
+          padding:11px 16px;border:1.5px solid transparent;min-width:0}
+  .search:focus-within{border-color:var(--brand)}
+  .search input{flex:1;min-width:0;background:transparent;border:0;outline:none;color:var(--fg);font-size:15px}
   .search input::placeholder{color:var(--mut)}
-  .iconbtn{width:46px;height:46px;border-radius:16px;background:var(--surf2);display:flex;align-items:center;
-           justify-content:center;border:0;color:var(--fg);transition:transform .16s var(--ease)}
-  .iconbtn:active{transform:scale(.92)}
-  .card{display:flex;gap:13px;align-items:center;background:var(--surf);border:1px solid var(--line);
-        border-radius:18px;padding:14px;margin:0 0 10px;animation:rise .3s var(--ease) both}
-  .badge{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;
-         font-weight:700;font-size:19px;color:#fff;flex:none}
-  .body{flex:1;min-width:0}
-  .name{font-weight:700;font-size:15px;margin:0 0 2px}
-  .desc{color:var(--mut);font-size:12.5px;margin:0 0 6px;overflow:hidden;text-overflow:ellipsis;
-        display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-  .pat{display:inline-block;font-size:11px;color:var(--brand);border:1px solid var(--brand);
-       border-radius:999px;padding:2px 9px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .add{width:40px;height:40px;border-radius:13px;border:0;background:var(--brand);color:#fff;font-size:22px;
-       display:flex;align-items:center;justify-content:center;flex:none;text-decoration:none;
+  .pill{display:flex;align-items:center;gap:7px;background:var(--brand);color:var(--brand-fg);
+        border:0;border-radius:22px;padding:11px 18px;font-size:14px;font-weight:600;white-space:nowrap;
+        transition:transform .16s var(--ease)}
+  .pill:active{transform:scale(.96)}
+  /* ---------- tabs ---------- */
+  .tabs{display:flex;gap:26px;padding:0 18px;border-bottom:1px solid var(--line)}
+  .tab{padding:13px 0 11px;border:0;background:transparent;color:var(--mut);font-size:15px;
+       border-bottom:3px solid transparent;transition:color .16s,border-color .16s}
+  .tab.on{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+  /* ---------- hero ---------- */
+  .hero{margin:16px;border-radius:26px;padding:22px;color:#fff;
+        background:linear-gradient(135deg,#4b2ea8 0%,#2b3fa8 55%,#1a4fd8 100%);position:relative;overflow:hidden}
+  .hero .chip{display:inline-block;font-size:11.5px;letter-spacing:.6px;font-weight:700;
+              background:rgba(255,255,255,.16);border-radius:999px;padding:6px 14px;margin-bottom:14px}
+  .hero h2{margin:0 0 8px;font-size:27px;letter-spacing:-.4px}
+  .hero p{margin:0 0 18px;font-size:14px;line-height:1.55;color:rgba(255,255,255,.9);max-width:88%}
+  .hero .cta{display:inline-flex;align-items:center;gap:9px;background:#fff;color:#202124;border:0;
+             border-radius:999px;padding:13px 22px;font-size:14.5px;font-weight:700;text-decoration:none}
+  .hero .cup{position:absolute;right:26px;bottom:18px;width:84px;height:84px;border-radius:20px;
+             background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:40px}
+  /* ---------- section heads ---------- */
+  .head{display:flex;align-items:baseline;justify-content:space-between;padding:6px 18px 10px}
+  .head h3{margin:0;font-size:21px;letter-spacing:-.3px}
+  .head a{color:var(--brand);font-size:13.5px;text-decoration:none;font-weight:600}
+  .count{padding:0 18px 12px;color:var(--mut);font-size:13.5px}
+  /* ---------- cards ---------- */
+  .card{background:var(--surf);border:1px solid var(--line);border-radius:24px;margin:0 16px 14px;
+        padding:16px;animation:rise .3s var(--ease) both}
+  .c-top{display:flex;gap:13px;align-items:flex-start}
+  .ico{width:58px;height:58px;border-radius:17px;flex:none;display:flex;align-items:center;justify-content:center;
+       font-size:26px;color:#fff;font-weight:700}
+  .c-name{font-weight:700;font-size:16.5px;margin:2px 0 4px}
+  .c-meta{color:var(--mut);font-size:13px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .star{color:var(--star)}
+  .c-desc{color:var(--fg);opacity:.85;font-size:13.5px;line-height:1.55;margin:12px 0 14px}
+  .c-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;
+          border-top:1px solid var(--line);padding-top:12px}
+  .cat{color:var(--mut);font-size:12.5px}
+  .add{display:inline-flex;align-items:center;gap:6px;background:var(--brand);color:#fff;border:0;
+       border-radius:999px;padding:9px 18px;font-size:13.5px;font-weight:600;text-decoration:none;
        transition:transform .16s var(--ease)}
-  .add:active{transform:scale(.9)}
-  .state{color:var(--mut);font-size:13.5px;text-align:center;padding:26px 10px}
-  .note{color:var(--mut);font-size:12px;margin:18px 0 0;line-height:1.6}
-  .note b{color:var(--fg)}
+  .add:active{transform:scale(.95)}
+  .add.on{background:var(--chip);color:var(--mut)}
+  .state{color:var(--mut);text-align:center;padding:34px 20px;font-size:14px}
+  /* ---------- sidebar ---------- */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+  .scrim.on{opacity:1;pointer-events:auto}
+  .side{position:fixed;top:0;left:0;bottom:0;width:74%;max-width:320px;background:var(--bg);z-index:31;
+        transform:translateX(-102%);transition:transform .24s var(--ease);padding:18px 0 20px;overflow:auto}
+  .side.on{transform:none}
+  .side h4{margin:8px 22px 10px;font-size:12px;letter-spacing:1px;color:var(--mut);font-weight:700}
+  .item{display:flex;align-items:center;gap:14px;padding:13px 22px;font-size:15px;text-decoration:none;
+        color:var(--fg);transition:background .16s}
+  .item:active{background:var(--surf2)}
+  .item.on{background:rgba(26,115,232,.14);color:var(--brand);font-weight:600;border-radius:0 999px 999px 0;margin-right:14px}
+  .side hr{border:0;border-top:1px solid var(--line);margin:14px 22px}
+  .legal{display:block;padding:9px 22px;font-size:13.5px;color:var(--mut);text-decoration:none}
+  .copy{padding:10px 22px 0;font-size:12px;color:var(--mut)}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
-  <h1>Extensions</h1>
-  <p class="lead">Scripts that change how a page looks and behaves.</p>
 
-  <div class="row">
+<div class="hdr">
+  <div class="hdr-in">
+    <button class="round" id="menu" aria-label="Categories">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+           stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <div class="logo">N</div>
     <label class="search">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
            stroke-linecap="round"><circle cx="11" cy="11" r="6.6"/><path d="M16.2 16.2 20.5 20.5"/></svg>
-      <input id="q" placeholder="Search extensions" autocomplete="off">
+      <input id="q" placeholder="Search" autocomplete="off">
     </label>
-    <button class="iconbtn" id="reload" aria-label="Reload">
+    <button class="round" id="theme" aria-label="Theme">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-           stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
+           stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/></svg>
+    </button>
+    <button class="pill" id="local">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg>
+      Local
     </button>
   </div>
+  <div class="tabs">
+    <button class="tab on" data-view="discover">Discover</button>
+    <button class="tab" data-view="extensions">Extensions</button>
+    <button class="tab" data-view="themes">Themes</button>
+  </div>
+</div>
 
-  <div id="list"><div class="state">Loading…</div></div>
+<div id="view"></div>
 
-  <p class="note">
-    These are <b>userscripts</b>, not Chrome extensions - Manifest V3 needs a Chromium engine with an
-    extension API, and this browser runs on WebView, which has none. Network ad blocking is already done
-    natively before the page loads; what a script adds is the rest.
-  </p>
+<div class="scrim" id="scrim"></div>
+<aside class="side" id="side">
+  <h4>CATEGORIES</h4>
+  <div id="cats"></div>
+  <hr>
+  <a class="legal" href="nijatva://settings">Privacy and security</a>
+  <a class="legal" href="nijatva://settings">Nijatva Terms of Service</a>
+  <div class="copy" id="copy">© 2026 Nijatva Web Store</div>
+</aside>
 
 <script>
 (function () {
-  var BASE = 'https://raw.githubusercontent.com/vasudev-work/nijatva-browser/main/extensions/';
-  var COL = ['#2A9CF0', '#0C9054', '#90EA48', '#1EE4F6', '#1248B4', '#1E8484'];
-  var all = [];
+  var BASE = 'https://raw.githubusercontent.com/vesudev/x/'; // replaced below
+  BASE = 'https://raw.githubusercontent.com/vasudev-work/nijatva-browser/main/extensions/';
+  var COL = ['#1a73e8', '#0c9054', '#e2543a', '#c13584', '#7b4bff', '#00a8a2', '#f5a623'];
+  var THEMES = [
+    { name: 'Nijatva Dark', desc: 'Blue and green on matte black - the default.', cat: 'Appearance' },
+    { name: 'Nijatva Light', desc: 'The same palette on white, for daylight.', cat: 'Appearance' },
+    { name: 'Quiet Nature', desc: 'Forest green and sage, in dark or ivory.', cat: 'Appearance' },
+    { name: 'AMOLED Black', desc: 'Pure black surfaces for OLED screens.', cat: 'Accessibility' }
+  ];
+  var all = [], view = 'discover', cat = 'All Items', theme = 'dark';
+  var installed = {};
+
   var q = document.getElementById('q');
-  var list = document.getElementById('list');
+  var viewEl = document.getElementById('view');
+  var scrim = document.getElementById('scrim');
+  var side = document.getElementById('side');
+
+  // ids the app already has, handed over in the URL
+  try {
+    var p = new URLSearchParams(location.search).get('installed') || '';
+    p.split(',').forEach(function (x) { if (x) installed[x.trim()] = 1; });
+  } catch (e) { }
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
-  function colour(name) {
-    var x = 0;
-    for (var i = 0; i < name.length; i++) x = (x * 31 + name.charCodeAt(i)) % COL.length;
-    return COL[x];
+  function colour(s) { var x = 0; for (var i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) % COL.length; return COL[x]; }
+  function cats() {
+    var set = {};
+    all.forEach(function (e) { set[e.category || 'Other'] = 1; });
+    return Object.keys(set).sort();
   }
 
-  function draw() {
-    var term = (q.value || '').toLowerCase().trim();
-    var items = all.filter(function (e) {
+  function card(e, i) {
+    var nm = e.name || 'Extension';
+    var isOn = installed[e.id] ? true : false;
+    var link = 'nijatva://install?u=' + encodeURIComponent(BASE + (e.file || '')) +
+               '&n=' + encodeURIComponent(nm) + '&p=' + encodeURIComponent(e.pattern || '*');
+    var btn = isOn
+      ? '<span class="add on">Installed</span>'
+      : '<a class="add" href="' + esc(link) + '">+ Add</a>';
+    return '<div class="card" style="animation-delay:' + Math.min(i * 30, 210) + 'ms">' +
+      '<div class="c-top">' +
+        '<div class="ico" style="background:' + colour(nm) + '">' + esc(nm.charAt(0).toUpperCase()) + '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div class="c-name">' + esc(nm) + '</div>' +
+          '<div class="c-meta"><span>v' + esc(e.version || '1.0') + '</span><span>·</span>' +
+          '<span>' + esc(e.pattern || '*') + '</span></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="c-desc">' + esc(e.desc || '') + '</div>' +
+      '<div class="c-foot"><span class="cat">' + esc(e.category || 'Other') + '</span>' + btn + '</div>' +
+    '</div>';
+  }
+
+  function listFor(term) {
+    term = (term || '').toLowerCase().trim();
+    return all.filter(function (e) {
+      if (cat !== 'All Items' && (e.category || 'Other') !== cat) return false;
       if (!term) return true;
       return (e.name || '').toLowerCase().indexOf(term) >= 0 ||
              (e.desc || '').toLowerCase().indexOf(term) >= 0 ||
+             (e.category || '').toLowerCase().indexOf(term) >= 0 ||
              (e.pattern || '').toLowerCase().indexOf(term) >= 0;
     });
-    if (!items.length) {
-      list.innerHTML = '<div class="state">' +
-        (all.length ? 'Nothing matches that.' : 'No extensions found.') + '</div>';
+  }
+
+  function render() {
+    var term = q.value || '';
+    if (view === 'themes') {
+      var html = '<div class="head"><h3>All Themes</h3></div>' +
+        '<div class="count">' + THEMES.length + ' themes, all built in</div>';
+      THEMES.forEach(function (t, i) {
+        html += '<div class="card" style="animation-delay:' + (i * 30) + 'ms">' +
+          '<div class="c-top"><div class="ico" style="background:' + colour(t.name) + '">◐</div>' +
+          '<div style="flex:1;min-width:0"><div class="c-name">' + esc(t.name) + '</div>' +
+          '<div class="c-meta"><span>built in</span><span>·</span><span>no download</span></div></div></div>' +
+          '<div class="c-desc">' + esc(t.desc) + '</div>' +
+          '<div class="c-foot"><span class="cat">' + esc(t.cat) + '</span>' +
+          '<a class="add" href="nijatva://appearance">Open</a></div></div>';
+      });
+      viewEl.innerHTML = html;
       return;
     }
-    var html = '';
-    items.forEach(function (e, i) {
-      var nm = e.name || 'Extension';
-      var link = 'nijatva://install?u=' + encodeURIComponent(BASE + (e.file || '')) +
-                 '&n=' + encodeURIComponent(nm) +
-                 '&p=' + encodeURIComponent(e.pattern || '*');
-      html += '<div class="card" style="animation-delay:' + Math.min(i * 30, 240) + 'ms">' +
-        '<div class="badge" style="background:' + colour(nm) + '">' + esc(nm.charAt(0).toUpperCase()) + '</div>' +
-        '<div class="body">' +
-          '<p class="name">' + esc(nm) + '</p>' +
-          '<p class="desc">' + esc(e.desc || '') + '</p>' +
-          '<span class="pat">' + esc(e.pattern || '*') + '</span>' +
+
+    if (view === 'discover') {
+      var rec = listFor(term).slice(0, 3);
+      var html2 =
+        '<div class="hero">' +
+          '<span class="chip">NIJATVA WEB STORE FEATURED</span>' +
+          '<h2>Favorites of 2026</h2>' +
+          '<p>Scripts that make the pages you already read cleaner, quieter and faster.</p>' +
+          '<a class="cta" href="#" data-go="extensions">See collection →</a>' +
+          '<div class="cup">🏆</div>' +
         '</div>' +
-        '<a class="add" href="' + esc(link) + '" aria-label="Install ' + esc(nm) + '">+</a>' +
-      '</div>';
+        '<div class="head"><h3>Recommended for you</h3>' +
+        '<a href="#" data-go="extensions">See more</a></div>';
+      if (!all.length) html2 += '<div class="state">Loading…</div>';
+      else if (!rec.length) html2 += '<div class="state">Nothing matches that.</div>';
+      else rec.forEach(function (e, i) { html2 += card(e, i); });
+      viewEl.innerHTML = html2;
+      return;
+    }
+
+    var items = listFor(term);
+    var html3 = '<div class="head"><h3>' + (cat === 'All Items' ? 'All Extensions' : esc(cat)) + '</h3></div>' +
+      '<div class="count">Found ' + items.length + ' matching items in Nijatva Web Store</div>';
+    if (!all.length) html3 += '<div class="state">Loading…</div>';
+    else if (!items.length) html3 += '<div class="state">Nothing matches that.</div>';
+    else items.forEach(function (e, i) { html3 += card(e, i); });
+    viewEl.innerHTML = html3;
+  }
+
+  function renderCats() {
+    var names = ['All Items'].concat(cats());
+    var icons = { 'All Items': '◎', 'Reading': '📖', 'Privacy': '🛡', 'YouTube': '▶', 'Productivity': '⚡',
+                  'Accessibility': '♿', 'Developer Tools': '⌘', 'Lifestyle': '🎮', 'Other': '◻' };
+    var html = '';
+    names.forEach(function (n) {
+      html += '<a class="item' + (n === cat ? ' on' : '') + '" href="#" data-cat="' + esc(n) + '">' +
+        '<span>' + (icons[n] || '◻') + '</span>' + esc(n) + '</a>';
     });
-    list.innerHTML = html;
+    document.getElementById('cats').innerHTML = html;
+  }
+
+  function setView(v) {
+    view = v;
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
+      t.classList.toggle('on', t.getAttribute('data-view') === v);
+    });
+    render();
   }
 
   function load() {
-    list.innerHTML = '<div class="state">Loading…</div>';
+    viewEl.innerHTML = '<div class="state">Loading…</div>';
     var xhr = new XMLHttpRequest();
     xhr.open('GET', BASE + 'index.json?t=' + Date.now(), true);
     xhr.onload = function () {
       try {
         var d = JSON.parse(xhr.responseText);
         all = (d.extensions || []).slice();
-        if (!all.length) { list.innerHTML = '<div class="state">The list is empty.</div>'; return; }
-        draw();
-      } catch (e) { list.innerHTML = '<div class="state">The list could not be read.</div>'; }
+        renderCats();
+        render();
+      } catch (e) { viewEl.innerHTML = '<div class="state">The list could not be read.</div>'; }
     };
     xhr.onerror = function () {
-      list.innerHTML = '<div class="state">Could not reach the list. Check your connection.</div>';
+      viewEl.innerHTML = '<div class="state">Could not reach the list. Check your connection.</div>';
     };
     xhr.send();
   }
 
-  q.addEventListener('input', draw);
-  document.getElementById('reload').addEventListener('click', load);
+  q.addEventListener('input', render);
+  document.getElementById('theme').addEventListener('click', function () {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+  });
+  document.getElementById('local').addEventListener('click', function () {
+    alert('No account and no sync. Extensions install on this device only.');
+  });
+  document.getElementById('menu').addEventListener('click', function () {
+    side.classList.add('on'); scrim.classList.add('on');
+  });
+  scrim.addEventListener('click', function () {
+    side.classList.remove('on'); scrim.classList.remove('on');
+  });
+  document.addEventListener('click', function (ev) {
+    var t = ev.target.closest ? ev.target.closest('[data-go],[data-cat]') : null;
+    if (!t) return;
+    ev.preventDefault();
+    if (t.hasAttribute('data-go')) { setView(t.getAttribute('data-go')); return; }
+    cat = t.getAttribute('data-cat');
+    renderCats();
+    side.classList.remove('on'); scrim.classList.remove('on');
+    if (view === 'discover') setView('extensions'); else render();
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
+    t.addEventListener('click', function () { setView(t.getAttribute('data-view')); });
+  });
   load();
 })();
 </script>
