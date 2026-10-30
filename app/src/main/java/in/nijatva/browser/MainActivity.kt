@@ -401,6 +401,10 @@ document.open();document.write(h);document.close();
 
         val startContainer = active
         if (startContainer != null) loadContainer(startContainer) else newTab(ntpUrl())
+        (intent?.getStringExtra("open_url"))?.let { u ->
+            intent.removeExtra("open_url")
+            try { newTab(u) } catch (_: Exception) { }
+        }
         openFromIntent(intent)
         showLastCrashIfAny()
 
@@ -1759,6 +1763,18 @@ document.open();document.write(h);document.close();
             "addshortcut" -> startActivity(Intent(this, HomeShortcutsActivity::class.java))
             "voice" -> voiceSearch()
             "mute" -> toggleMediaMute()
+            "store" -> go("file:///android_asset/store.html")
+            "install" -> {
+                val script = uri.getQueryParameter("u")
+                if (!script.isNullOrBlank()) {
+                    try {
+                        startActivity(Intent(this, ExtensionsActivity::class.java)
+                            .putExtra("install_url", script)
+                            .putExtra("install_name", uri.getQueryParameter("n") ?: "")
+                            .putExtra("install_pattern", uri.getQueryParameter("p") ?: "*"))
+                    } catch (_: Exception) { }
+                }
+            }
         }
     }
 

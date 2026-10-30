@@ -24,11 +24,13 @@ class ExtensionsActivity : BaseSettingsActivity() {
 
     private val store by lazy { ExtensionStore(this) }
 
+    /** Badge colours, taken from the GBWB palette so the list stays in one family. */
     private val palette = intArrayOf(
-        0xFF3B82F6.toInt(), 0xFF8CC63F.toInt(), 0xFFFF6600.toInt(),
-        0xFFA855F7.toInt(), 0xFF14B8A6.toInt(), 0xFFEF4444.toInt()
+        0xFF2A9CF0.toInt(), 0xFF0C9054.toInt(), 0xFF90EA48.toInt(),
+        0xFF1EE4F6.toInt(), 0xFF1248B4.toInt(), 0xFF1E8484.toInt()
     )
 
+    private var installing = false
     private var remote: List<ExtStore.Remote>? = null
     private var remoteError: String? = null
     private var remoteLoading = false
@@ -42,6 +44,15 @@ class ExtensionsActivity : BaseSettingsActivity() {
         }
 
     override fun build(b: SettingsBuilder, content: LinearLayout) {
+        // arriving from the store: nijatva://install?u=..&n=..&p=..
+        val want = intent?.getStringExtra("install_url")
+        if (!want.isNullOrBlank() && !installing) {
+            installing = true
+            intent?.removeExtra("install_url")
+            installFromUrl(want, intent?.getStringExtra("install_name") ?: "",
+                intent?.getStringExtra("install_pattern") ?: "*")
+        }
+
         val installed = store.getAll()
         val haveIds = installed.map { it.id }.toHashSet()
 
@@ -233,6 +244,32 @@ class ExtensionsActivity : BaseSettingsActivity() {
         }
     }
 
+    /** Install straight from a URL, which is what the store's + button sends. */
+    private fun installFromUrl(url: String, name: String, pattern: String) {
+        val base = url.substringBeforeLast('/') + "/"
+        val file = url.substringAfterLast('/')
+        toast(getString(R.string.ext_downloading, name.ifBlank { file }))
+        ExtStore.fetchScript(base, file) { code, err ->
+            runOnUiThread {
+                if (code == null) { toast(err ?: getString(R.string.ext_load_failed)); return@runOnUiThread }
+                val meta = UserScriptMeta.parse(code)
+                val nm = name.ifBlank { meta.name ?: file }
+                val slug = nm.lowercase().replace(Regex("[^a-z0-9]+"), "-").trim('-')
+                store.add(
+                    Extension(
+                        id = "web-" + slug + "-" + (System.currentTimeMillis() % 100000),
+                        name = nm,
+                        pattern = pattern.ifBlank { meta.pattern.ifBlank { "*" } },
+                        code = code, enabled = true, builtIn = false,
+                        desc = meta.desc ?: getString(R.string.ext_from_github),
+                        runAt = meta.runAt, grants = meta.grants)
+                )
+                toast(getString(R.string.ext_installed_toast, nm))
+                rebuild()
+            }
+        }
+    }
+
     private fun installRemote(r: ExtStore.Remote, already: Boolean) {
         if (already) { toast(getString(R.string.ext_already)); return }
         toast(getString(R.string.ext_downloading, r.name))
@@ -365,18 +402,15 @@ class ExtensionsActivity : BaseSettingsActivity() {
             .show()
     }
 
+    /** Opens the store page inside the browser, not a dialog about it. */
     private fun findMore() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.ext_find_more)
-            .setMessage(R.string.ext_find_note)
-            .setPositiveButton(R.string.ext_open_repo) { _, _ ->
-                try {
-                    startActivity(Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/nijatva/nijatva-browser")))
-                } catch (_: Exception) { }
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        try {
+            startActivity(Intent(this, MainActivity::class.java)
+                .putExtra("open_url", "file:///android_asset/store.html")
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
+        } catch (_: Exception) {
+            toast(getString(R.string.ext_load_failed))
+        }
     }
 
     private fun addDialog() {
