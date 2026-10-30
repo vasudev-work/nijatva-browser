@@ -91,6 +91,8 @@
   .side hr{border:0;border-top:1px solid var(--line);margin:14px 22px}
   .legal{display:block;padding:9px 22px;font-size:13.5px;color:var(--mut);text-decoration:none}
   .copy{padding:10px 22px 0;font-size:12px;color:var(--mut)}
+  .note{padding:14px 22px 0;font-size:11.5px;line-height:1.6;color:var(--mut)}
+  .note b{color:var(--fg);word-break:break-all}
   /* ---------- detail sheet ---------- */
   .sheet-scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;
                transition:opacity .22s var(--ease);z-index:40}
@@ -160,6 +162,12 @@
   <a class="legal" href="nijatva://settings">Privacy and security</a>
   <a class="legal" href="nijatva://settings">Nijatva Terms of Service</a>
   <div class="copy" id="copy">© 2026 Nijatva Web Store</div>
+  <p class="note" id="src"></p>
+  <p class="note">
+    These are <b>userscripts</b>, not Chrome extensions - Manifest V3 needs a
+    Chromium engine with an extension API, and this browser runs on WebView.
+    Ad blocking is already done natively before the page loads.
+  </p>
 </aside>
 
 <div class="sheet-scrim" id="sscrim"></div>
@@ -390,6 +398,11 @@
     };
     xhr.send();
   }
+
+  try {
+    document.getElementById('src').innerHTML =
+      'Reading from <b>' + esc(BASE) + '</b> - change it in Settings, Extensions, Extension source.';
+  } catch (e) { }
 
   q.addEventListener('input', render);
   document.getElementById('theme').addEventListener('click', function () {

@@ -1808,8 +1808,12 @@ document.open();document.write(h);document.close();
                             (if (prefs.getString("theme_mode", "dark") == "light") "light" else "dark")
                     }
                 } catch (_: Exception) { "" }
+                val src = try {
+                    prefs.getString("ext_store_base", ExtStore.DEFAULT_BASE) ?: ExtStore.DEFAULT_BASE
+                } catch (_: Exception) { ExtStore.DEFAULT_BASE }
                 go("file:///android_asset/store.html?installed=" + Uri.encode(have) +
-                    "&builtin=" + Uri.encode(built) + "&theme=" + Uri.encode(th))
+                    "&builtin=" + Uri.encode(built) + "&theme=" + Uri.encode(th) +
+                    "&base=" + Uri.encode(src))
             }
             "theme" -> {
                 val name = uri.getQueryParameter("name") ?: ""
