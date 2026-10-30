@@ -81,6 +81,33 @@
       "file": "search-by-image.js",
       "version": "1.0",
       "category": "Productivity"
+    },
+    {
+      "id": "enable-right-click",
+      "name": "Enable right click",
+      "desc": "Right-click, select and copy on sites that block it",
+      "pattern": "*",
+      "file": "enable-right-click.js",
+      "version": "1.0",
+      "category": "Accessibility"
+    },
+    {
+      "id": "unhook-youtube",
+      "name": "Unhook YouTube",
+      "desc": "Hide recommendations and comments on watch pages",
+      "pattern": "*youtube.com*",
+      "file": "unhook-youtube.js",
+      "version": "1.0",
+      "category": "Productivity"
+    },
+    {
+      "id": "hover-preview",
+      "name": "Hover image preview",
+      "desc": "See the full picture without leaving the page",
+      "pattern": "*",
+      "file": "hover-preview.js",
+      "version": "1.0",
+      "category": "Productivity"
     }
   ]
 }
