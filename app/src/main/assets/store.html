@@ -135,10 +135,7 @@
            stroke-linecap="round"><circle cx="11" cy="11" r="6.6"/><path d="M16.2 16.2 20.5 20.5"/></svg>
       <input id="q" placeholder="Search" autocomplete="off">
     </label>
-    <button class="round" id="theme" aria-label="Theme">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-           stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/></svg>
-    </button>
+    <button class="round" id="theme" aria-label="Theme"><span id="theme-ico"></span></button>
     <button class="pill" id="local">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
            stroke-linecap="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg>
@@ -198,10 +195,12 @@
 
   // ids the app already has, handed over in the URL
   var currentTheme = '';
+  var startTheme = '';
   try {
     var sp = new URLSearchParams(location.search);
     (sp.get('installed') || '').split(',').forEach(function (x) { if (x) installed[x.trim()] = 1; });
     currentTheme = sp.get('theme') || '';
+    startTheme = currentTheme;
     // scripts that ship inside the app: id~name~desc~pattern~category, joined by |
     (sp.get('builtin') || '').split('|').forEach(function (row) {
       if (!row) return;
@@ -407,10 +406,25 @@
       'Reading from <b>' + esc(BASE) + '</b> - change it in Settings, Extensions, Extension source.';
   } catch (e) { }
 
+  var ICO_SUN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/>' +
+    '<path d="M12 2.6v2.2M12 19.2v2.2M4.2 12H2M22 12h-2.2M6.3 6.3 4.8 4.8M19.2 19.2l-1.5-1.5M17.7 6.3l1.5-1.5M4.8 19.2l1.5-1.5"/></svg>';
+  var ICO_MOON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/></svg>';
+
+  function paintTheme() {
+    try {
+      // in dark the button offers light, and the other way round
+      document.getElementById('theme-ico').innerHTML = theme === 'dark' ? ICO_SUN : ICO_MOON;
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) { }
+  }
+
   q.addEventListener('input', render);
   document.getElementById('theme').addEventListener('click', function () {
     theme = theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
+    paintTheme();
   });
   document.getElementById('local').addEventListener('click', function () {
     alert('No account and no sync. Extensions install on this device only.');
@@ -444,6 +458,10 @@
   Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
     t.addEventListener('click', function () { setView(t.getAttribute('data-view')); });
   });
+  // open in the same light or dark the browser is in
+  if (startTheme.indexOf('light') >= 0) theme = 'light';
+  paintTheme();
+
   load();
 })();
 </script>
