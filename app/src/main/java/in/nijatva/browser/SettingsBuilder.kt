@@ -278,7 +278,7 @@ class SettingsBuilder(private val a: Context, private val root: LinearLayout) {
         return r
     }
 
-    private fun textCol(row: LinearLayout, title: String, summary: String?, color: Int) {
+    private fun textCol(row: LinearLayout, title: String, summary: String?, color: Int): TextView? {
         val col = LinearLayout(a)
         col.orientation = LinearLayout.VERTICAL
         col.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
@@ -289,6 +289,7 @@ class SettingsBuilder(private val a: Context, private val root: LinearLayout) {
         t.maxLines = 1
         t.ellipsize = android.text.TextUtils.TruncateAt.END
         col.addView(t)
+        var made: TextView? = null
         if (!summary.isNullOrEmpty()) {
             val s = TextView(a)
             s.text = summary
@@ -298,8 +299,10 @@ class SettingsBuilder(private val a: Context, private val root: LinearLayout) {
             s.ellipsize = android.text.TextUtils.TruncateAt.END
             s.setPadding(0, dp(3), 0, 0)
             col.addView(s)
+            made = s
         }
         row.addView(col)
+        return made
     }
 
     private fun addIcon(row: LinearLayout, iconRes: Int) {
@@ -330,13 +333,14 @@ class SettingsBuilder(private val a: Context, private val root: LinearLayout) {
         card.addView(v)
     }
 
-    fun navRow(card: LinearLayout, title: String, summary: String?, l: View.OnClickListener?) {
+    fun navRow(card: LinearLayout, title: String, summary: String?, l: View.OnClickListener?): TextView? {
         val r = rowBase(card)
         titleIcon(r, title)
-        textCol(r, title, summary, textColor)
+        val sub = textCol(r, title, summary, textColor)
         addChevron(r)
         r.setOnClickListener(l)
         r.isClickable = l != null
+        return sub
     }
 
     fun iconRow(card: LinearLayout, iconRes: Int, title: String, summary: String?, l: View.OnClickListener?) {

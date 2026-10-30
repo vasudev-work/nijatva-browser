@@ -173,8 +173,18 @@ class SettingsActivity : BaseSettingsActivity() {
                 b.section(title)
                 val card = b.card()
                 for (item in items) {
-                    b.navRow(card, item.label, subtitle(item.label),
-                        android.view.View.OnClickListener { item.action() })
+                    val night = item.label == getString(R.string.m_night)
+                    val sub = b.navRow(card, item.label, subtitle(item.label),
+                        android.view.View.OnClickListener {
+                            if (night) {
+                                // flip it and change just this line: rebuilding the
+                                // whole screen for one switch is what felt rough
+                                prefs.edit()
+                                    .putBoolean("force_dark", !prefs.getBoolean("force_dark", false))
+                                    .apply()
+                                sub?.text = if (prefs.getBoolean("force_dark", false)) "On" else "Off"
+                            } else item.action()
+                        })
                 }
             }
 

@@ -19,6 +19,7 @@ abstract class BaseSettingsActivity : AppCompatActivity() {
     protected lateinit var prefs: SharedPreferences
     protected lateinit var content: LinearLayout
     protected lateinit var rootColumn: LinearLayout
+    protected lateinit var scrollView: ScrollView
     protected abstract val titleRes: Int
 
     override fun onCreate(saved: Bundle?) {
@@ -57,6 +58,7 @@ abstract class BaseSettingsActivity : AppCompatActivity() {
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
         val scroll = ScrollView(this)
+        scrollView = scroll
         content = LinearLayout(this)
         content.orientation = LinearLayout.VERTICAL
         content.setPadding(0, 0, 0, dp(24))
@@ -73,10 +75,17 @@ abstract class BaseSettingsActivity : AppCompatActivity() {
     /** Insert a view just under the header bar (it survives rebuild()). */
     protected fun addTopView(v: android.view.View) { rootColumn.addView(v, 1) }
 
-    /** Re-render the content (used after the extension list changes). */
+    /**
+     * Re-render the content. The scroll position is kept: rebuilding used to
+     * throw the reader back to the top of a long screen.
+     */
     protected fun rebuild() {
+        val y = if (this::scrollView.isInitialized) scrollView.scrollY else 0
         content.removeAllViews()
         build(SettingsBuilder(this, content), content)
+        if (this::scrollView.isInitialized) {
+            scrollView.post { scrollView.scrollTo(0, y) }
+        }
     }
 
     protected fun attr(resid: Int): Int {

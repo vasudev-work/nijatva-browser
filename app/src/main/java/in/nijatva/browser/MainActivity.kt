@@ -2161,9 +2161,17 @@ document.open();document.write(h);document.close();
     // ---------- sliding menu ----------
     private fun toggleMenu() { if (menuOpen) hideMenuPanel() else showMenuPanel() }
 
+    private var lastMenuSnapshot = ""
+
+    private fun menuSnapshot(): String =
+        "${prefs.getBoolean("force_dark", false)}|$desktop|$textZoom|${updateTag != null}|$menuPage"
+
     private fun showMenuPanel() {
         menuPage = 0
-        buildMenu()
+        // rebuilding forty views every time the menu opens is wasted work;
+        // only do it when a value shown on it has moved
+        val snap = menuSnapshot()
+        if (!menuBuilt || snap != lastMenuSnapshot) buildMenu()
         val screen = resources.displayMetrics.widthPixels
         val cardW = minOf(dp(320), screen - dp(24))
         val lp = FrameLayout.LayoutParams(
@@ -2217,6 +2225,7 @@ document.open();document.write(h);document.close();
 
     private fun buildMenu() {
         menuBuilt = true
+        lastMenuSnapshot = menuSnapshot()
         quick.removeAllViews()
         quick.addView(quickAction(R.drawable.ic_back, getString(R.string.q_back)) {
             cur()?.let { if (it.canGoBack()) it.goBack() }; hideMenuPanel() })

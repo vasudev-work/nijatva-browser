@@ -119,6 +119,7 @@
   .ghost:active{background:var(--surf2)}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  body.settled .card{animation:none!important}
   @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
@@ -304,6 +305,7 @@
       else if (!rec.length) html2 += '<div class="state">Nothing matches that.</div>';
       else rec.forEach(function (e, i) { html2 += card(e, i); });
       viewEl.innerHTML = html2;
+      document.body.classList.add('settled');
       return;
     }
 
@@ -432,7 +434,12 @@
     } catch (e) { }
   }
 
-  q.addEventListener('input', render);
+  var qt = null;
+  q.addEventListener('input', function () {
+    // one render per pause, not one per key
+    clearTimeout(qt);
+    qt = setTimeout(render, 120);
+  });
   document.getElementById('theme').addEventListener('click', function () {
     theme = theme === 'dark' ? 'light' : 'dark';
     paintTheme();
