@@ -242,6 +242,7 @@ document.open();document.write(h);document.close();
     private lateinit var quick: LinearLayout
     private lateinit var menuList: LinearLayout
     private var menuBuilt = false
+    private var menuPage = 0
     private var menuOpen = false
 
     private var dark = true
@@ -2147,7 +2148,8 @@ document.open();document.write(h);document.close();
     private fun toggleMenu() { if (menuOpen) hideMenuPanel() else showMenuPanel() }
 
     private fun showMenuPanel() {
-        if (!menuBuilt) buildMenu()
+        menuPage = 0
+        buildMenu()
         val screen = resources.displayMetrics.widthPixels
         val cardW = minOf(dp(320), screen - dp(24))
         val lp = FrameLayout.LayoutParams(
@@ -2214,6 +2216,39 @@ document.open();document.write(h);document.close();
             cur()?.reload(); hideMenuPanel() })
 
         val b = SettingsBuilder(this, menuList)
+        menuList.removeAllViews()
+
+        if (menuPage == 1) {
+            // the page tools, one tap in, so the menu itself stays short
+            val back = b.card()
+            b.navRow(back, getString(R.string.m_back_menu), null,
+                View.OnClickListener { menuPage = 0; buildMenu() })
+            val pc = b.card()
+            b.menuRow(pc, R.drawable.ic_find, getString(R.string.m_find), null, act(7))
+            b.menuRow(pc, R.drawable.ic_share, getString(R.string.m_share), null, act(8))
+            b.menuRow(pc, R.drawable.ic_translate, getString(R.string.m_translate), null, act(9))
+            b.iconValueRow(pc, R.drawable.ic_desktop, getString(R.string.m_desktop),
+                if (desktop) "On" else "Off", act(10))
+            b.iconValueRow(pc, R.drawable.ic_zoom, getString(R.string.m_zoom), "$textZoom%", act(11))
+            b.menuRow(pc, R.drawable.ic_book, getString(R.string.m_reader), null, act(14))
+            b.menuRow(pc, R.drawable.ic_speak, getString(R.string.m_listen), null, act(18))
+            b.menuRow(pc, R.drawable.ic_ai, getString(R.string.m_summary), null, act(15))
+            b.menuRow(pc, R.drawable.ic_movie, getString(R.string.m_media), null, act(17))
+            b.menuRow(pc, R.drawable.ic_bookmarkadd, getString(R.string.m_save_later), null, act(16))
+            b.menuRow(pc, R.drawable.ic_pdf, getString(R.string.m_save_pdf), null, act(12))
+            b.menuRow(pc, R.drawable.ic_save, getString(R.string.m_save_page), null, act(13))
+            b.menuRow(pc, R.drawable.ic_camera, getString(R.string.m_screenshot), null, act(21))
+            b.menuRow(pc, R.drawable.ic_pin, getString(R.string.m_pin), null, act(22))
+            b.menuRow(pc, R.drawable.ic_lock, getString(R.string.kiosk_title), null, act(20))
+            b.menuRow(pc, R.drawable.ic_select, getString(R.string.m_block_element), null, act(31))
+            b.menuRow(pc, R.drawable.ic_code, getString(R.string.m_page_scripts), null, act(32))
+            b.menuRow(pc, R.drawable.ic_tools, getString(R.string.m_tools), null, act(19))
+            b.menuRow(pc, R.drawable.ic_ai, getString(R.string.ai_title), null, act(23))
+            b.menuRow(pc, R.drawable.ic_help, getString(R.string.m_help), null, act(30))
+            b.menuRow(pc, R.drawable.ic_logo, getString(R.string.m_about), null, act(26))
+            return
+        }
+
         val c = b.card()
 
         // ---- what you opened the menu for ----
@@ -2245,6 +2280,9 @@ document.open();document.write(h);document.close();
             try { cur()?.reload() } catch (_: Exception) { }
             hideMenuPanel()
         }
+        b.menuRow(c, R.drawable.ic_tools, getString(R.string.m_page_tools),
+            getString(R.string.m_page_tools_sub),
+            View.OnClickListener { menuPage = 1; buildMenu() })
         b.menuRow(c, R.drawable.ic_code, getString(R.string.m_dev), null,
             View.OnClickListener {
                 hideMenuPanel()
@@ -2253,30 +2291,6 @@ document.open();document.write(h);document.close();
         b.menuRow(c, R.drawable.ic_settings, getString(R.string.m_settings), null, act(25))
         b.menuRow(c, R.drawable.ic_delete, getString(R.string.m_delete_data), null, act(29))
         b.menuRow(c, R.drawable.ic_exit, getString(R.string.m_exit), null, act(27))
-        b.divider(c)
-
-        // ---- the page in front of you ----
-        b.menuRow(c, R.drawable.ic_find, getString(R.string.m_find), null, act(7))
-        b.menuRow(c, R.drawable.ic_share, getString(R.string.m_share), null, act(8))
-        b.menuRow(c, R.drawable.ic_translate, getString(R.string.m_translate), null, act(9))
-        b.iconValueRow(c, R.drawable.ic_desktop, getString(R.string.m_desktop), if (desktop) "On" else "Off", act(10))
-        b.iconValueRow(c, R.drawable.ic_zoom, getString(R.string.m_zoom), "$textZoom%", act(11))
-        b.menuRow(c, R.drawable.ic_pdf, getString(R.string.m_save_pdf), null, act(12))
-        b.menuRow(c, R.drawable.ic_save, getString(R.string.m_save_page), null, act(13))
-        b.menuRow(c, R.drawable.ic_book, getString(R.string.m_reader), null, act(14))
-        b.menuRow(c, R.drawable.ic_ai, getString(R.string.m_summary), null, act(15))
-        b.menuRow(c, R.drawable.ic_bookmarkadd, getString(R.string.m_save_later), null, act(16))
-        b.menuRow(c, R.drawable.ic_movie, getString(R.string.m_media), null, act(17))
-        b.menuRow(c, R.drawable.ic_speak, getString(R.string.m_listen), null, act(18))
-        b.menuRow(c, R.drawable.ic_tools, getString(R.string.m_tools), null, act(19))
-        b.menuRow(c, R.drawable.ic_lock, getString(R.string.kiosk_title), null, act(20))
-        b.menuRow(c, R.drawable.ic_camera, getString(R.string.m_screenshot), null, act(21))
-        b.menuRow(c, R.drawable.ic_pin, getString(R.string.m_pin), null, act(22))
-        b.menuRow(c, R.drawable.ic_select, getString(R.string.m_block_element), null, act(31))
-        b.menuRow(c, R.drawable.ic_code, getString(R.string.m_page_scripts), null, act(32))
-        b.menuRow(c, R.drawable.ic_ai, getString(R.string.ai_title), null, act(23))
-        b.menuRow(c, R.drawable.ic_help, getString(R.string.m_help), null, act(30))
-        b.menuRow(c, R.drawable.ic_logo, getString(R.string.m_about), null, act(26))
     }
 
     private fun act(which: Int): View.OnClickListener = View.OnClickListener { onMenuAction(which) }

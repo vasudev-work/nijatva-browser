@@ -738,4 +738,7 @@
     <string name="sec_autofill">Autofill</string>
     <string name="sec_appearance">Appearance</string>
     <string name="sec_reading">Reading &amp; downloads</string>
+    <string name="m_page_tools">Page tools</string>
+    <string name="m_page_tools_sub">Reader, translate, media, save, zoom</string>
+    <string name="m_back_menu">Back to menu</string>
 </resources>
