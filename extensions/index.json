@@ -108,6 +108,15 @@
       "file": "hover-preview.js",
       "version": "1.0",
       "category": "Productivity"
+    },
+    {
+      "id": "ask-anythingllm",
+      "name": "Ask AnythingLLM",
+      "desc": "Ask your own AnythingLLM about the page you are on",
+      "pattern": "*",
+      "file": "ask-anythingllm.js",
+      "version": "1.0",
+      "category": "Productivity"
     }
   ]
 }
