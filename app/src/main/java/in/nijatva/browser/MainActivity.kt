@@ -1757,6 +1757,15 @@ document.open();document.write(h);document.close();
         im?.hideSoftInputFromWindow(urlBar.windowToken, 0)
     }
 
+    /** Tell the store page a card was installed, so it flips in place. */
+    private fun markInstalled(id: String) {
+        try {
+            val js = "window.__nijatvaInstalled&&window.__nijatvaInstalled(" +
+                org.json.JSONObject.quote(id) + ")"
+            cur()?.evaluateJavascript(js, null)
+        } catch (_: Exception) { }
+    }
+
     private fun handleScheme(u: String) {
         val uri = Uri.parse(u)
         when (uri.host) {
@@ -1818,22 +1827,56 @@ document.open();document.write(h);document.close();
             "appearance" -> startActivity(Intent(this, AppearanceActivity::class.java))
             "settings" -> startActivity(Intent(this, SettingsActivity::class.java))
             "install" -> {
+                // Installed from the store page: do it here, in place, so the page
+                // is never left. The card flips to Installed when it is done.
                 val builtin = uri.getQueryParameter("b")
+                val script = uri.getQueryParameter("u")
+                val nm = uri.getQueryParameter("n") ?: ""
+                val pat = uri.getQueryParameter("p") ?: "*"
+
                 if (!builtin.isNullOrBlank()) {
                     try {
-                        startActivity(Intent(this, ExtensionsActivity::class.java)
-                            .putExtra("install_builtin", builtin))
+                        val store = ExtensionStore(this)
+                        val e = store.catalog().firstOrNull { it.id == builtin }
+                        if (e == null) toast(getString(R.string.ext_load_failed))
+                        else {
+                            store.add(e.copy(enabled = true))
+                            toast(getString(R.string.ext_installed_toast, e.name))
+                            markInstalled(builtin)
+                        }
                     } catch (_: Exception) { }
                     return
                 }
-                val script = uri.getQueryParameter("u")
+
                 if (!script.isNullOrBlank()) {
-                    try {
-                        startActivity(Intent(this, ExtensionsActivity::class.java)
-                            .putExtra("install_url", script)
-                            .putExtra("install_name", uri.getQueryParameter("n") ?: "")
-                            .putExtra("install_pattern", uri.getQueryParameter("p") ?: "*"))
-                    } catch (_: Exception) { }
+                    val base = script.substringBeforeLast('/') + "/"
+                    val file = script.substringAfterLast('/')
+                    toast(getString(R.string.ext_downloading, nm.ifBlank { file }))
+                    ExtStore.fetchScript(base, file) { code, err ->
+                        runOnUiThread {
+                            if (code == null) {
+                                toast(err ?: getString(R.string.ext_load_failed))
+                                return@runOnUiThread
+                            }
+                            try {
+                                val meta = UserScriptMeta.parse(code)
+                                val name = nm.ifBlank { meta.name ?: file }
+                                val slug = name.lowercase().replace(Regex("[^a-z0-9]+"), "-").trim('-')
+                                val wanted = uri.getQueryParameter("i") ?: ""
+                                val id = wanted.ifBlank { "web-" + slug + "-" + (System.currentTimeMillis() % 100000) }
+                                ExtensionStore(this).add(
+                                    Extension(
+                                        id = id, name = name,
+                                        pattern = pat.ifBlank { meta.pattern.ifBlank { "*" } },
+                                        code = code, enabled = true, builtIn = false,
+                                        desc = meta.desc ?: getString(R.string.ext_from_github),
+                                        runAt = meta.runAt, grants = meta.grants)
+                                )
+                                toast(getString(R.string.ext_installed_toast, name))
+                                markInstalled(id)
+                            } catch (_: Exception) { }
+                        }
+                    }
                 }
             }
         }

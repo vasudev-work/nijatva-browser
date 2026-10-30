@@ -219,7 +219,8 @@
     var link = e.fromApp
       ? 'nijatva://install?b=' + encodeURIComponent(e.id)
       : 'nijatva://install?u=' + encodeURIComponent(BASE + (e.file || '')) +
-        '&n=' + encodeURIComponent(nm) + '&p=' + encodeURIComponent(e.pattern || '*');
+        '&n=' + encodeURIComponent(nm) + '&p=' + encodeURIComponent(e.pattern || '*') +
+        '&i=' + encodeURIComponent(e.id || '');
     var btn = isOn
       ? '<span class="add on">Installed</span>'
       : '<a class="add" href="' + esc(link) + '">+ Add</a>';
@@ -228,7 +229,7 @@
         '<div class="ico" style="background:' + colour(nm) + '">' + esc(nm.charAt(0).toUpperCase()) + '</div>' +
         '<div style="flex:1;min-width:0">' +
           '<div class="c-name">' + esc(nm) + '</div>' +
-          '<div class="c-meta"><span>v' + esc(e.version || '1.0') + '</span><span>·</span>' +
+          '<div class="c-meta"><span>' + (e.fromApp ? 'built in' : 'v' + esc(e.version || '1.0')) + '</span><span>·</span>' +
           '<span>' + esc(e.pattern || '*') + '</span></div>' +
         '</div>' +
       '</div>' +
@@ -322,6 +323,16 @@
     render();
   }
 
+  // called from the app once the extension is actually installed
+  window.__nijatvaInstalled = function (id) {
+    try {
+      if (!id) return;
+      installed[id] = 1;
+      closeSheet();
+      render();
+    } catch (e) { }
+  };
+
   function openSheet(e) {
     var nm = e.name || 'Extension';
     var isOn = installed[e.id] ? true : false;
@@ -329,7 +340,8 @@
     var link = e.fromApp
       ? 'nijatva://install?b=' + encodeURIComponent(e.id)
       : 'nijatva://install?u=' + encodeURIComponent(src) +
-        '&n=' + encodeURIComponent(nm) + '&p=' + encodeURIComponent(e.pattern || '*');
+        '&n=' + encodeURIComponent(nm) + '&p=' + encodeURIComponent(e.pattern || '*') +
+        '&i=' + encodeURIComponent(e.id || '');
     var action = isOn
       ? '<span class="add on">Installed</span>'
       : '<a class="add" href="' + esc(link) + '">Add to Nijatva</a>';
@@ -337,7 +349,7 @@
       '<div class="s-top">' +
         '<div class="s-ico" style="background:' + colour(nm) + '">' + esc(nm.charAt(0).toUpperCase()) + '</div>' +
         '<div style="flex:1;min-width:0"><div class="s-name">' + esc(nm) + '</div>' +
-        '<div class="s-meta"><span>v' + esc(e.version || '1.0') + '</span><span>·</span>' +
+        '<div class="s-meta"><span>' + (e.fromApp ? 'built in' : 'v' + esc(e.version || '1.0')) + '</span><span>·</span>' +
         '<span>' + esc(e.category || 'Other') + '</span></div></div>' +
       '</div>' +
       '<p class="s-body">' + esc(e.desc || '') + '</p>' +
