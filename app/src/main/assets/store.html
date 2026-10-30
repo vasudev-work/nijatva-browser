@@ -199,6 +199,13 @@
   try {
     var sp = new URLSearchParams(location.search);
     (sp.get('installed') || '').split(',').forEach(function (x) { if (x) installed[x.trim()] = 1; });
+    // what was installed from this page, kept so a pull-to-refresh does not
+    // make every card look uninstalled again
+    try {
+      JSON.parse(localStorage.getItem('nijatva_installed') || '[]').forEach(function (x) {
+        if (x) installed[x] = 1;
+      });
+    } catch (e) { }
     currentTheme = sp.get('theme') || '';
     startTheme = currentTheme;
     // scripts that ship inside the app: id~name~desc~pattern~category, joined by |
@@ -340,6 +347,10 @@
     try {
       if (!id) return;
       installed[id] = 1;
+      try {
+        var keep = Object.keys(installed);
+        localStorage.setItem('nijatva_installed', JSON.stringify(keep));
+      } catch (e) { }
       closeSheet();
       render();
     } catch (e) { }

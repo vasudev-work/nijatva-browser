@@ -71,7 +71,10 @@ class ExtensionsActivity : BaseSettingsActivity() {
 
         b.section(getString(R.string.ext_installed))
         if (installed.isEmpty()) b.note(getString(R.string.ext_none))
-        else installed.forEach { addCard(content, it, false) }
+        else {
+            installed.forEach { addCard(content, it, false) }
+            b.note(getString(R.string.ext_long_press_hint))
+        }
 
         val catalog = store.catalog().filter { !haveIds.contains(it.id) }
         if (catalog.isNotEmpty()) {
@@ -164,6 +167,7 @@ class ExtensionsActivity : BaseSettingsActivity() {
             sw.setOnCheckedChangeListener { _, on -> store.update(e.copy(enabled = on)) }
             card.addView(sw)
             card.setOnClickListener { detail(e) }
+            card.setOnLongClickListener { confirmRemove(e); true }
             card.isClickable = true
         }
 
@@ -281,6 +285,20 @@ class ExtensionsActivity : BaseSettingsActivity() {
                 rebuild()
             }
         }
+    }
+
+    /** Long-press an installed extension: remove it, with a question first. */
+    private fun confirmRemove(e: Extension) {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.ext_remove_title))
+            .setMessage(getString(R.string.ext_remove_msg, e.name))
+            .setPositiveButton(getString(R.string.ext_remove)) { _, _ ->
+                store.delete(e.id)
+                toast(getString(R.string.ext_removed_toast, e.name))
+                rebuild()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun installRemote(r: ExtStore.Remote, already: Boolean) {

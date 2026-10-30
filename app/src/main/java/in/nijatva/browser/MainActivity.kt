@@ -1848,7 +1848,11 @@ document.open();document.write(h);document.close();
                         val store = ExtensionStore(this)
                         val e = store.catalog().firstOrNull { it.id == builtin }
                         if (e == null) toast(getString(R.string.ext_load_failed))
-                        else {
+                        else if (store.getAll().any { it.id == builtin }) {
+                            // already here: say so instead of adding a second copy
+                            toast(getString(R.string.ext_already))
+                            markInstalled(builtin)
+                        } else {
                             store.add(e.copy(enabled = true))
                             toast(getString(R.string.ext_installed_toast, e.name))
                             markInstalled(builtin)
