@@ -126,6 +126,15 @@
       "file": "open-directory-search.js",
       "version": "1.0",
       "category": "Productivity"
+    },
+    {
+      "id": "filepursuit-search",
+      "name": "FilePursuit search",
+      "desc": "Search FilePursuit's index of open servers",
+      "pattern": "*",
+      "file": "filepursuit-search.js",
+      "version": "1.0",
+      "category": "Productivity"
     }
   ]
 }
