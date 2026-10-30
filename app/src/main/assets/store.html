@@ -175,8 +175,11 @@
 
 <script>
 (function () {
-  var BASE = 'https://raw.githubusercontent.com/vesudev/x/'; // replaced below
-  BASE = 'https://raw.githubusercontent.com/vasudev-work/nijatva-browser/main/extensions/';
+  var BASE = 'https://raw.githubusercontent.com/vasudev-work/nijatva-browser/main/extensions/';
+  try {
+    var fromApp = new URLSearchParams(location.search).get('base');
+    if (fromApp) BASE = fromApp.charAt(fromApp.length - 1) === '/' ? fromApp : fromApp + '/';
+  } catch (e) { }
   var COL = ['#1a73e8', '#0c9054', '#e2543a', '#c13584', '#7b4bff', '#00a8a2', '#f5a623'];
   var THEMES = [
     { key: 'nijatva-dark',  name: 'Nijatva Dark',  desc: 'Blue and green on matte black - the default.', cat: 'Appearance' },
