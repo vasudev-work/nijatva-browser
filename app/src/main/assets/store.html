@@ -91,6 +91,30 @@
   .side hr{border:0;border-top:1px solid var(--line);margin:14px 22px}
   .legal{display:block;padding:9px 22px;font-size:13.5px;color:var(--mut);text-decoration:none}
   .copy{padding:10px 22px 0;font-size:12px;color:var(--mut)}
+  /* ---------- detail sheet ---------- */
+  .sheet-scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;
+               transition:opacity .22s var(--ease);z-index:40}
+  .sheet-scrim.on{opacity:1;pointer-events:auto}
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--surf);
+         border-radius:26px 26px 0 0;border-top:1px solid var(--line);
+         transform:translateY(102%);transition:transform .26s var(--ease);
+         max-height:88vh;overflow:auto;padding:10px 18px 26px}
+  .sheet.on{transform:none}
+  .grab{width:44px;height:4px;border-radius:2px;background:var(--line);margin:6px auto 16px}
+  .s-top{display:flex;gap:15px;align-items:flex-start;margin-bottom:16px}
+  .s-ico{width:72px;height:72px;border-radius:20px;flex:none;display:flex;align-items:center;justify-content:center;
+         font-size:32px;color:#fff;font-weight:700}
+  .s-name{font-size:20px;font-weight:700;margin:2px 0 5px;letter-spacing:-.3px}
+  .s-meta{color:var(--mut);font-size:13px;display:flex;gap:8px;flex-wrap:wrap}
+  .s-body{font-size:14px;line-height:1.6;color:var(--fg);opacity:.9;margin:0 0 16px}
+  .kv{display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-top:1px solid var(--line);font-size:13.5px}
+  .kv span:first-child{color:var(--mut)}
+  .kv span:last-child{text-align:right;word-break:break-word;max-width:62%}
+  .s-actions{display:flex;gap:10px;margin-top:18px}
+  .s-actions .add,.s-actions .ghost{flex:1;justify-content:center;padding:14px 18px;font-size:15px}
+  .ghost{display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--fg);
+         border:1.5px solid var(--line);border-radius:999px;text-decoration:none}
+  .ghost:active{background:var(--surf2)}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
@@ -138,6 +162,9 @@
   <div class="copy" id="copy">© 2026 Nijatva Web Store</div>
 </aside>
 
+<div class="sheet-scrim" id="sscrim"></div>
+<div class="sheet" id="sheet"><div class="grab"></div><div id="sheet-body"></div></div>
+
 <script>
 (function () {
   var BASE = 'https://raw.githubusercontent.com/vesudev/x/'; // replaced below
@@ -183,7 +210,7 @@
     var btn = isOn
       ? '<span class="add on">Installed</span>'
       : '<a class="add" href="' + esc(link) + '">+ Add</a>';
-    return '<div class="card" style="animation-delay:' + Math.min(i * 30, 210) + 'ms">' +
+    return '<div class="card" data-id="' + esc(e.id || '') + '" style="animation-delay:' + Math.min(i * 30, 210) + 'ms">' +
       '<div class="c-top">' +
         '<div class="ico" style="background:' + colour(nm) + '">' + esc(nm.charAt(0).toUpperCase()) + '</div>' +
         '<div style="flex:1;min-width:0">' +
@@ -257,12 +284,16 @@
 
   function renderCats() {
     var names = ['All Items'].concat(cats());
+    var counts = {};
+    all.forEach(function (e) { var c = e.category || 'Other'; counts[c] = (counts[c] || 0) + 1; });
+    counts['All Items'] = all.length;
     var icons = { 'All Items': '◎', 'Reading': '📖', 'Privacy': '🛡', 'YouTube': '▶', 'Productivity': '⚡',
                   'Accessibility': '♿', 'Developer Tools': '⌘', 'Lifestyle': '🎮', 'Other': '◻' };
     var html = '';
     names.forEach(function (n) {
       html += '<a class="item' + (n === cat ? ' on' : '') + '" href="#" data-cat="' + esc(n) + '">' +
-        '<span>' + (icons[n] || '◻') + '</span>' + esc(n) + '</a>';
+        '<span>' + (icons[n] || '◻') + '</span>' + esc(n) +
+        '<span style="margin-left:auto;color:var(--mut);font-size:12.5px">' + (counts[n] || 0) + '</span></a>';
     });
     document.getElementById('cats').innerHTML = html;
   }
@@ -273,6 +304,38 @@
       t.classList.toggle('on', t.getAttribute('data-view') === v);
     });
     render();
+  }
+
+  function openSheet(e) {
+    var nm = e.name || 'Extension';
+    var isOn = installed[e.id] ? true : false;
+    var src = BASE + (e.file || '');
+    var link = 'nijatva://install?u=' + encodeURIComponent(src) +
+               '&n=' + encodeURIComponent(nm) + '&p=' + encodeURIComponent(e.pattern || '*');
+    var action = isOn
+      ? '<span class="add on">Installed</span>'
+      : '<a class="add" href="' + esc(link) + '">Add to Nijatva</a>';
+    document.getElementById('sheet-body').innerHTML =
+      '<div class="s-top">' +
+        '<div class="s-ico" style="background:' + colour(nm) + '">' + esc(nm.charAt(0).toUpperCase()) + '</div>' +
+        '<div style="flex:1;min-width:0"><div class="s-name">' + esc(nm) + '</div>' +
+        '<div class="s-meta"><span>v' + esc(e.version || '1.0') + '</span><span>·</span>' +
+        '<span>' + esc(e.category || 'Other') + '</span></div></div>' +
+      '</div>' +
+      '<p class="s-body">' + esc(e.desc || '') + '</p>' +
+      '<div class="kv"><span>Runs on</span><span>' + esc(e.pattern || '*') + '</span></div>' +
+      '<div class="kv"><span>Type</span><span>Userscript, injected into the page</span></div>' +
+      '<div class="kv"><span>Needs</span><span>Nothing outside the page</span></div>' +
+      '<div class="kv"><span>Source</span><span>' + esc(e.file || '') + '</span></div>' +
+      '<div class="s-actions">' +
+        '<a class="ghost" href="' + esc(src) + '">View source</a>' + action +
+      '</div>';
+    document.getElementById('sheet').classList.add('on');
+    document.getElementById('sscrim').classList.add('on');
+  }
+  function closeSheet() {
+    document.getElementById('sheet').classList.remove('on');
+    document.getElementById('sscrim').classList.remove('on');
   }
 
   function load() {
@@ -307,7 +370,17 @@
   scrim.addEventListener('click', function () {
     side.classList.remove('on'); scrim.classList.remove('on');
   });
+  document.getElementById('sscrim').addEventListener('click', closeSheet);
   document.addEventListener('click', function (ev) {
+    // a tap on the card opens its details; a tap on Add still installs
+    if (ev.target.closest && !ev.target.closest('.add')) {
+      var c = ev.target.closest('.card[data-id]');
+      if (c) {
+        var id = c.getAttribute('data-id');
+        var hit = all.filter(function (x) { return (x.id || '') === id; })[0];
+        if (hit) { ev.preventDefault(); openSheet(hit); return; }
+      }
+    }
     var t = ev.target.closest ? ev.target.closest('[data-go],[data-cat]') : null;
     if (!t) return;
     ev.preventDefault();
