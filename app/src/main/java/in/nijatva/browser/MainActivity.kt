@@ -1760,7 +1760,7 @@ document.open();document.write(h);document.close();
 
     /** Tell the store page a card was installed, so it flips in place. */
     /** The tab showing the store, so the callback lands where it was asked. */
-    private var storeTab: NijatvaWebView? = null
+    private var storeTab: android.webkit.WebView? = null
 
     private fun markInstalled(id: String) {
         try {
