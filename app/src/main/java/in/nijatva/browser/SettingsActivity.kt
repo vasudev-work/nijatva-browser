@@ -174,7 +174,10 @@ class SettingsActivity : BaseSettingsActivity() {
                 val card = b.card()
                 for (item in items) {
                     val night = item.label == getString(R.string.m_night)
-                    val sub = b.navRow(card, item.label, subtitle(item.label),
+                    // the listener needs the row it belongs to, so hold it in a
+                    // variable the lambda can see once navRow has built the row
+                    var line: android.widget.TextView? = null
+                    line = b.navRow(card, item.label, subtitle(item.label),
                         android.view.View.OnClickListener {
                             if (night) {
                                 // flip it and change just this line: rebuilding the
@@ -182,7 +185,7 @@ class SettingsActivity : BaseSettingsActivity() {
                                 prefs.edit()
                                     .putBoolean("force_dark", !prefs.getBoolean("force_dark", false))
                                     .apply()
-                                sub?.text = if (prefs.getBoolean("force_dark", false)) "On" else "Off"
+                                line?.text = if (prefs.getBoolean("force_dark", false)) "On" else "Off"
                             } else item.action()
                         })
                 }
