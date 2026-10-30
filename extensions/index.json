@@ -117,6 +117,15 @@
       "file": "ask-anythingllm.js",
       "version": "1.0",
       "category": "Productivity"
+    },
+    {
+      "id": "open-directory-search",
+      "name": "Open directory search",
+      "desc": "Find direct download links in open directories",
+      "pattern": "*",
+      "file": "open-directory-search.js",
+      "version": "1.0",
+      "category": "Productivity"
     }
   ]
 }
