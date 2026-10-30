@@ -731,4 +731,6 @@
     <string name="tts_voice_count">%1$d voices</string>
     <string name="tts_voice_saved">Voice set</string>
     <string name="tts_voice_search">Search a language</string>
+    <string name="m_night">Night mode</string>
+    <string name="m_dev">Developer tools</string>
 </resources>

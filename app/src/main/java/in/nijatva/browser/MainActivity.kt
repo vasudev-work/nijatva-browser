@@ -2091,41 +2091,66 @@ document.open();document.write(h);document.close();
 
         val b = SettingsBuilder(this, menuList)
         val c = b.card()
+
+        // ---- what you opened the menu for ----
         if (updateTag != null) {
-            b.menuRow(c, R.drawable.ic_update, getString(R.string.m_update), getString(R.string.m_update_sum), act(28)); b.divider(c)
+            b.menuRow(c, R.drawable.ic_update, getString(R.string.m_update), getString(R.string.m_update_sum), act(28))
+            b.divider(c)
         }
-        b.menuRow(c, R.drawable.ic_new_tab, getString(R.string.m_new_tab), null, act(0)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_incognito, getString(R.string.m_new_incognito), null, act(1)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_tabs, getString(R.string.m_add_group), null, act(3)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_history, getString(R.string.m_history), null, act(4)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_delete, getString(R.string.m_delete_data), null, act(29)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_download, getString(R.string.m_downloads), null, act(6)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_bookmark, getString(R.string.m_bookmarks), null, act(5)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_tabs, getString(R.string.m_recent), null, act(2)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_settings, getString(R.string.m_settings), null, act(25)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_help, getString(R.string.m_help), null, act(30)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_logo, getString(R.string.m_about), null, act(26)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_find, getString(R.string.m_find), null, act(7)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_select, getString(R.string.m_block_element), null, act(31)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_code, getString(R.string.m_page_scripts), null, act(32)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_share, getString(R.string.m_share), null, act(8)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_translate, getString(R.string.m_translate), null, act(9)); b.divider(c)
-        b.iconValueRow(c, R.drawable.ic_desktop, getString(R.string.m_desktop), if (desktop) "On" else "Off", act(10)); b.divider(c)
-        b.iconValueRow(c, R.drawable.ic_zoom, getString(R.string.m_zoom), "$textZoom%", act(11)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_pdf, getString(R.string.m_save_pdf), null, act(12)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_save, getString(R.string.m_save_page), null, act(13)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_book, getString(R.string.m_reader), null, act(14)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_ai, getString(R.string.m_summary), null, act(15)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_bookmarkadd, getString(R.string.m_save_later), null, act(16)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_movie, getString(R.string.m_media), null, act(17)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_speak, getString(R.string.m_listen), null, act(18)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_tools, getString(R.string.m_tools), null, act(19)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_lock, getString(R.string.kiosk_title), null, act(20)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_camera, getString(R.string.m_screenshot), null, act(21)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_pin, getString(R.string.m_pin), null, act(22)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_ai, getString(R.string.ai_title), null, act(23)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_extension, getString(R.string.m_extensions), null, act(24)); b.divider(c)
-        b.menuRow(c, R.drawable.ic_exit, getString(R.string.m_exit), null, act(27)); b.divider(c)
+        b.menuRow(c, R.drawable.ic_new_tab, getString(R.string.m_new_tab), null, act(0))
+        b.menuRow(c, R.drawable.ic_incognito, getString(R.string.m_new_incognito), null, act(1))
+        b.divider(c)
+
+        // ---- where things live ----
+        b.menuRow(c, R.drawable.ic_history, getString(R.string.m_history), null, act(4))
+        b.menuRow(c, R.drawable.ic_download, getString(R.string.m_downloads), null, act(6))
+        b.menuRow(c, R.drawable.ic_bookmark, getString(R.string.m_bookmarks), null, act(5))
+        b.menuRow(c, R.drawable.ic_tabs, getString(R.string.m_recent), null, act(2))
+        b.menuRow(c, R.drawable.ic_extension, getString(R.string.m_extensions), null, act(24))
+        b.menuRow(c, R.drawable.ic_tabs, getString(R.string.m_add_group), null, act(3))
+        b.divider(c)
+
+        // ---- how the browser behaves ----
+        val night = prefs.getBoolean("force_dark", false)
+        b.iconValueRow(c, R.drawable.ic_brightness, getString(R.string.m_night),
+            if (night) "On" else "Off") {
+            prefs.edit().putBoolean("force_dark", !night).apply()
+            try { cur()?.settings?.let { applyDarkMode(it) } } catch (_: Exception) { }
+            try { cur()?.reload() } catch (_: Exception) { }
+            hideMenuPanel()
+        }
+        b.menuRow(c, R.drawable.ic_code, getString(R.string.m_dev), null,
+            View.OnClickListener {
+                hideMenuPanel()
+                try { startActivity(Intent(this, AdvancedActivity::class.java)) } catch (_: Exception) { }
+            })
+        b.menuRow(c, R.drawable.ic_settings, getString(R.string.m_settings), null, act(25))
+        b.menuRow(c, R.drawable.ic_delete, getString(R.string.m_delete_data), null, act(29))
+        b.menuRow(c, R.drawable.ic_exit, getString(R.string.m_exit), null, act(27))
+        b.divider(c)
+
+        // ---- the page in front of you ----
+        b.menuRow(c, R.drawable.ic_find, getString(R.string.m_find), null, act(7))
+        b.menuRow(c, R.drawable.ic_share, getString(R.string.m_share), null, act(8))
+        b.menuRow(c, R.drawable.ic_translate, getString(R.string.m_translate), null, act(9))
+        b.iconValueRow(c, R.drawable.ic_desktop, getString(R.string.m_desktop), if (desktop) "On" else "Off", act(10))
+        b.iconValueRow(c, R.drawable.ic_zoom, getString(R.string.m_zoom), "$textZoom%", act(11))
+        b.menuRow(c, R.drawable.ic_pdf, getString(R.string.m_save_pdf), null, act(12))
+        b.menuRow(c, R.drawable.ic_save, getString(R.string.m_save_page), null, act(13))
+        b.menuRow(c, R.drawable.ic_book, getString(R.string.m_reader), null, act(14))
+        b.menuRow(c, R.drawable.ic_ai, getString(R.string.m_summary), null, act(15))
+        b.menuRow(c, R.drawable.ic_bookmarkadd, getString(R.string.m_save_later), null, act(16))
+        b.menuRow(c, R.drawable.ic_movie, getString(R.string.m_media), null, act(17))
+        b.menuRow(c, R.drawable.ic_speak, getString(R.string.m_listen), null, act(18))
+        b.menuRow(c, R.drawable.ic_tools, getString(R.string.m_tools), null, act(19))
+        b.menuRow(c, R.drawable.ic_lock, getString(R.string.kiosk_title), null, act(20))
+        b.menuRow(c, R.drawable.ic_camera, getString(R.string.m_screenshot), null, act(21))
+        b.menuRow(c, R.drawable.ic_pin, getString(R.string.m_pin), null, act(22))
+        b.menuRow(c, R.drawable.ic_select, getString(R.string.m_block_element), null, act(31))
+        b.menuRow(c, R.drawable.ic_code, getString(R.string.m_page_scripts), null, act(32))
+        b.menuRow(c, R.drawable.ic_ai, getString(R.string.ai_title), null, act(23))
+        b.menuRow(c, R.drawable.ic_help, getString(R.string.m_help), null, act(30))
+        b.menuRow(c, R.drawable.ic_logo, getString(R.string.m_about), null, act(26))
     }
 
     private fun act(which: Int): View.OnClickListener = View.OnClickListener { onMenuAction(which) }
