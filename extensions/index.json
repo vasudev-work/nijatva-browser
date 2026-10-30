@@ -17,7 +17,7 @@
       "pattern": "*youtube.com*",
       "file": "hide-shorts.js",
       "version": "1.0",
-      "category": "YouTube"
+      "category": "Productivity"
     },
     {
       "id": "stop-autoplay",
@@ -36,6 +36,42 @@
       "file": "wide-github.js",
       "version": "1.0",
       "category": "Developer Tools"
+    },
+    {
+      "id": "reader-width",
+      "name": "Readable article width",
+      "desc": "Keep article text at a comfortable line length",
+      "pattern": "*",
+      "file": "reader-width.js",
+      "version": "1.0",
+      "category": "Productivity"
+    },
+    {
+      "id": "hide-consent",
+      "name": "Hide cookie banners",
+      "desc": "Remove the consent overlay once it is on screen",
+      "pattern": "*",
+      "file": "hide-consent.js",
+      "version": "1.0",
+      "category": "Privacy"
+    },
+    {
+      "id": "no-miniplayer",
+      "name": "No YouTube mini player",
+      "desc": "Stop the mini player following you down the page",
+      "pattern": "*youtube.com*",
+      "file": "no-miniplayer.js",
+      "version": "1.0",
+      "category": "Take control of tabs"
+    },
+    {
+      "id": "dark-scrollbars",
+      "name": "Dark scrollbars",
+      "desc": "Dark scrollbars on light pages too",
+      "pattern": "*",
+      "file": "dark-scrollbars.js",
+      "version": "1.0",
+      "category": "Accessibility"
     }
   ]
 }

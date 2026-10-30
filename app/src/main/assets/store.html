@@ -304,8 +304,10 @@
     var counts = {};
     all.forEach(function (e) { var c = e.category || 'Other'; counts[c] = (counts[c] || 0) + 1; });
     counts['All Items'] = all.length;
-    var icons = { 'All Items': '◎', 'Reading': '📖', 'Privacy': '🛡', 'YouTube': '▶', 'Productivity': '⚡',
-                  'Accessibility': '♿', 'Developer Tools': '⌘', 'Lifestyle': '🎮', 'Other': '◻' };
+    var icons = { 'All Items': '◎', 'Productivity': '⚡', 'Helpful AI Assistants': '🤖',
+                  'Take control of tabs': '🗂', 'Lifestyle & Games': '☕',
+                  'Developer Tools': '⌘', 'Accessibility': '♿', 'Privacy': '🛡',
+                  'Reading': '📖', 'YouTube': '▶', 'Other': '◻' };
     var html = '';
     names.forEach(function (n) {
       html += '<a class="item' + (n === cat ? ' on' : '') + '" href="#" data-cat="' + esc(n) + '">' +

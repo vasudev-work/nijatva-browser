@@ -1790,10 +1790,10 @@ document.open();document.write(h);document.close();
                         "builtin-dark" to "Accessibility", "builtin-font" to "Accessibility",
                         "builtin-cookie" to "Privacy", "builtin-json" to "Developer Tools",
                         "builtin-ryd" to "YouTube", "builtin-media" to "Productivity",
-                        "builtin-bgplay" to "Productivity", "builtin-target" to "Productivity",
-                        "cat-shorts" to "YouTube", "cat-ytad" to "YouTube",
-                        "cat-noautoplay" to "YouTube", "cat-widegh" to "Developer Tools",
-                        "cat-sticky" to "Productivity", "cat-wiki" to "Reading",
+                        "builtin-bgplay" to "Productivity", "builtin-target" to "Take control of tabs",
+                        "cat-shorts" to "Productivity", "cat-ytad" to "Productivity",
+                        "cat-noautoplay" to "Productivity", "cat-widegh" to "Developer Tools",
+                        "cat-sticky" to "Productivity", "cat-wiki" to "Productivity",
                         "cat-read" to "Accessibility", "cat-gray" to "Accessibility")
                     ExtensionStore(this).catalog().joinToString("|") { e ->
                         listOf(e.id, e.name, e.desc.take(70), e.pattern, cats[e.id] ?: "Other")
