@@ -721,4 +721,14 @@
     <string name="rd_no_article">This page has no article to read</string>
     <string name="dg_speech">Speech engine</string>
     <string name="dg_speech_sum">Ready state, voice count and start-up time</string>
+    <string name="tts_voice">Voice</string>
+    <string name="tts_voice_sum">Language and voice for reading aloud</string>
+    <string name="tts_voice_default">System default</string>
+    <string name="tts_voice_on">Selected</string>
+    <string name="tts_voice_languages">Languages</string>
+    <string name="tts_voice_starting">Starting the speech engine…</string>
+    <string name="tts_voice_failed">No speech engine is installed on this device</string>
+    <string name="tts_voice_count">%1$d voices</string>
+    <string name="tts_voice_saved">Voice set</string>
+    <string name="tts_voice_search">Search a language</string>
 </resources>

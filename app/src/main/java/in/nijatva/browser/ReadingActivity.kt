@@ -61,6 +61,11 @@ class ReadingActivity : BaseSettingsActivity() {
             prefs.edit().putBoolean("keep_screen_on", on).apply()
         }
         b.divider(c)
+        b.navRow(c, getString(R.string.tts_voice), voiceSummary(),
+            android.view.View.OnClickListener {
+                startActivity(android.content.Intent(this, VoiceActivity::class.java))
+            })
+        b.divider(c)
         b.switchRow(c, getString(R.string.rd_chunk), getString(R.string.rd_chunk_sum),
             prefs.getBoolean("tts_chunk", true)) { _, on ->
             prefs.edit().putBoolean("tts_chunk", on).apply()
@@ -167,5 +172,15 @@ class ReadingActivity : BaseSettingsActivity() {
         b.navRow(add, getString(R.string.rd_dict_add), getString(R.string.rd_dict_add_sum)) { dictDialog() }
 
         b.note(getString(R.string.rd_note))
+    }
+
+    /** What the voice row shows: the chosen language, or the system default. */
+    private fun voiceSummary(): String {
+        val tag = prefs.getString("tts_voice_lang", "") ?: ""
+        if (tag.isBlank()) return getString(R.string.tts_voice_default)
+        val name = try {
+            java.util.Locale.forLanguageTag(tag).getDisplayName(java.util.Locale.ENGLISH)
+        } catch (_: Exception) { tag }
+        return name.ifBlank { tag }
     }
 }

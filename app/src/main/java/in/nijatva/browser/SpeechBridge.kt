@@ -96,9 +96,18 @@ class SpeechBridge(webView: WebView) {
     private fun say(text: String, lang: String, rate: Float, pitch: Float) {
         if (text.isBlank() || tts == null) return
         try {
-            if (lang.isNotBlank()) {
-                val l = Locale.forLanguageTag(lang)
+            // the page wins; otherwise the voice chosen in settings, otherwise the system
+            val chosen = try { prefs()?.getString("tts_voice_lang", "") ?: "" } catch (_: Exception) { "" }
+            val want = if (lang.isNotBlank()) lang else chosen
+            if (want.isNotBlank()) {
+                val l = Locale.forLanguageTag(want)
                 if (tts?.isLanguageAvailable(l) == TextToSpeech.LANG_AVAILABLE) tts?.language = l
+            }
+            val voiceName = try { prefs()?.getString("tts_voice_name", "") ?: "" } catch (_: Exception) { "" }
+            if (voiceName.isNotBlank()) {
+                try {
+                    tts?.voices?.firstOrNull { it.name == voiceName }?.let { tts?.voice = it }
+                } catch (_: Exception) { }
             }
             // a site that asks for normal speed gets the reader's own preference
             val prefRate = try { prefs()?.getFloat("tts_rate", 1.0f) ?: 1.0f } catch (_: Exception) { 1.0f }

@@ -46,6 +46,7 @@ class SettingsBuilder(private val a: Context, private val root: LinearLayout) {
         put(R.string.dls_title, R.drawable.ic_tune)
         put(R.string.s_website_settings, R.drawable.ic_lock)
         put(R.string.rd_title, R.drawable.ic_font)
+        put(R.string.tts_voice, R.drawable.ic_speak)
         put(R.string.r_privacy_dashboard, R.drawable.ic_shield)
         put(R.string.ab_title, R.drawable.ic_block)
         put(R.string.s_tracking, R.drawable.ic_eyeoff)
