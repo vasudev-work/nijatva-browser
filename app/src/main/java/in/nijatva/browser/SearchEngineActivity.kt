@@ -22,7 +22,7 @@ class SearchEngineActivity : BaseSettingsActivity() {
         for (e in all) {
             val card = b.card()
             val isDefault = e.name == store.default().name
-            b.valueRow(card, (if (isDefault) "\u2713 " else "") + e.name, e.template, null)
+            b.valueRow(card, (if (isDefault) "\u2713 " else "") + e.name, hostOf(e.template), null)
             b.divider(card)
             b.navRow(card, getString(R.string.se_set_default), null) {
                 store.defaultName = e.name
@@ -81,4 +81,9 @@ class SearchEngineActivity : BaseSettingsActivity() {
             .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
+
+    /** The reference shows the host under the name, not the whole template. */
+    private fun hostOf(template: String): String = try {
+        android.net.Uri.parse(template).host?.removePrefix("www.") ?: template
+    } catch (_: Exception) { template }
 }

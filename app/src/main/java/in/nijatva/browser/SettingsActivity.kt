@@ -151,13 +151,12 @@ class SettingsActivity : BaseSettingsActivity() {
             b.section(getString(R.string.st_essentials))
             val e = b.card()
             val list = essentials()
-            for ((i, item) in list.withIndex()) {
-                if (i > 0) b.divider(e)
-                b.navRow(e, item.label, null, android.view.View.OnClickListener { item.action() })
+            for (item in list) {
+                b.navRow(e, item.label, subtitle(item.label),
+                    android.view.View.OnClickListener { item.action() })
             }
 
             val more = everything().sumOf { it.second.size } - list.size
-            b.divider(e)
             b.navRow(e, getString(R.string.st_all_settings),
                 getString(R.string.st_all_settings_sub, more),
                 android.view.View.OnClickListener {
@@ -170,9 +169,9 @@ class SettingsActivity : BaseSettingsActivity() {
         for ((title, items) in everything()) {
             b.section(title)
             val card = b.card()
-            for ((i, item) in items.withIndex()) {
-                if (i > 0) b.divider(card)
-                b.navRow(card, item.label, null, android.view.View.OnClickListener { item.action() })
+            for (item in items) {
+                b.navRow(card, item.label, subtitle(item.label),
+                    android.view.View.OnClickListener { item.action() })
             }
         }
         b.section(getString(R.string.sec_about))
@@ -204,6 +203,24 @@ class SettingsActivity : BaseSettingsActivity() {
         box.addView(et)
         addTopView(box)
     }
+
+    /**
+     * The second line a row shows. The reference puts the current value there
+     * rather than a description, so that is what this returns.
+     */
+    private fun subtitle(label: String): String? = try {
+        when (label) {
+            getString(R.string.s_search_engine) ->
+                SearchEngineStore(this).default().name
+            getString(R.string.s_appearance) ->
+                when (prefs.getString("theme_mode", "dark")) {
+                    "light" -> "Light"
+                    "system" -> "System"
+                    else -> "Dark"
+                }
+            else -> null
+        }
+    } catch (_: Exception) { null }
 
     private fun containerName(): String = try {
         val s = ContainerStore(this)
