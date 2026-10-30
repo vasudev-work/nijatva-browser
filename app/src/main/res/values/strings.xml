@@ -734,4 +734,6 @@
     <string name="m_night">Night mode</string>
     <string name="m_dev">Developer tools</string>
     <string name="m_ext_store">Extension store</string>
+    <string name="sec_basics">Basics</string>
+    <string name="sec_autofill">Autofill</string>
 </resources>

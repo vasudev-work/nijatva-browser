@@ -37,18 +37,45 @@ class SettingsActivity : BaseSettingsActivity() {
     private fun dialog(r: Int, body: String) = { showDialog(getString(r), body) }
 
     /** The ten rows worth showing without a tap. */
-    private fun essentials(): List<Item> = listOf(
-        row(R.string.s_search_engine) { go(SearchEngineActivity::class.java) },
-        row(R.string.s_appearance) { go(AppearanceActivity::class.java) },
-        row(R.string.r_privacy_dashboard) { go(PrivacyActivity::class.java) },
-        row(R.string.ab_title) { go(AdBlockActivity::class.java) },
-        row(R.string.s_tabs) { go(TabsActivity::class.java) },
-        downloads(),
-        row(R.string.s_history) { go(HistoryActivity::class.java) },
-        row(R.string.s_bookmarks) { go(BookmarksActivity::class.java) },
-        row(R.string.s_passwords) { go(PasswordsActivity::class.java) },
-        row(R.string.s_clear_data) { go(PrivacyActivity::class.java) }
-    ).sortedBy { it.label.lowercase() }
+    /**
+     * The first screen, in the shape the reference uses: five short groups.
+     * Everything else lives behind All settings.
+     */
+    private fun tier1(): List<Pair<String, List<Item>>> = listOf(
+        getString(R.string.sec_basics) to listOf(
+            row(R.string.s_search_engine) { go(SearchEngineActivity::class.java) },
+            row(R.string.hp_title) { go(HomepageActivity::class.java) }
+        ),
+        getString(R.string.sec_autofill) to listOf(
+            row(R.string.r_autofill) { go(AutofillActivity::class.java) },
+            row(R.string.s_passwords) { go(PasswordsActivity::class.java) }
+        ),
+        getString(R.string.sec_appearance) to listOf(
+            row(R.string.s_accessibility) { go(AppearanceActivity::class.java) },
+            Item(getString(R.string.m_night)) { toggleNight() },
+            row(R.string.s_tabs) { go(TabsActivity::class.java) },
+            row(R.string.s_appearance) { go(AppearanceActivity::class.java) },
+            row(R.string.s_toolbar_nav) { go(ToolbarActivity::class.java) }
+        ),
+        getString(R.string.sec_privacy) to listOf(
+            row(R.string.s_clear_data) { go(PrivacyActivity::class.java) },
+            row(R.string.r_privacy_dashboard) { go(PrivacyActivity::class.java) }
+        ),
+        getString(R.string.sec_advanced) to listOf(
+            row(R.string.s_permissions) { go(SitePermissionsActivity::class.java) },
+            row(R.string.r_languages) { go(LanguagesActivity::class.java) },
+            row(R.string.s_reader_translate) { go(ReadingActivity::class.java) },
+            row(R.string.dls_title) { go(DownloadSettingsActivity::class.java) },
+            row(R.string.r_about) { go(AboutActivity::class.java) }
+        )
+    )
+
+    /** Night mode is a switch, not a screen, so it flips here. */
+    private fun toggleNight() {
+        val on = prefs.getBoolean("force_dark", false)
+        prefs.edit().putBoolean("force_dark", !on).apply()
+        rebuild()
+    }
 
     /** Everything, grouped by what it is for, A to Z inside each group. */
     private fun everything(): List<Pair<String, List<Item>>> = listOf(
@@ -65,7 +92,14 @@ class SettingsActivity : BaseSettingsActivity() {
             row(R.string.rl_title) { go(ReadingListActivity::class.java) },
             row(R.string.s_search_engine) { go(SearchEngineActivity::class.java) },
             row(R.string.s_tabs) { go(TabsActivity::class.java) },
-            row(R.string.s_toolbar_nav) { go(ToolbarActivity::class.java) }
+            row(R.string.s_toolbar_nav) { go(ToolbarActivity::class.java) },
+            Item(getString(R.string.st_manage_modes)) {
+                try {
+                    startActivity(Intent(this, MainActivity::class.java)
+                        .putExtra("show", "containers")
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
+                } catch (_: Exception) { }
+            }
         ).sortedBy { it.label.lowercase() },
 
         getString(R.string.sec_privacy) to listOf(
@@ -137,27 +171,20 @@ class SettingsActivity : BaseSettingsActivity() {
         }
 
         if (!showAll) {
-            b.section(getString(R.string.st_modes))
-            val m = b.card()
-            b.navRow(m, getString(R.string.st_manage_modes), containerName(),
-                android.view.View.OnClickListener {
-                    try {
-                        startActivity(Intent(this, MainActivity::class.java)
-                            .putExtra("show", "containers")
-                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
-                    } catch (_: Exception) { }
-                })
-
-            b.section(getString(R.string.st_essentials))
-            val e = b.card()
-            val list = essentials()
-            for (item in list) {
-                b.navRow(e, item.label, subtitle(item.label),
-                    android.view.View.OnClickListener { item.action() })
+            val groups = tier1()
+            for ((title, items) in groups) {
+                b.section(title)
+                val card = b.card()
+                for (item in items) {
+                    b.navRow(card, item.label, subtitle(item.label),
+                        android.view.View.OnClickListener { item.action() })
+                }
             }
 
-            val more = everything().sumOf { it.second.size } - list.size
-            b.navRow(e, getString(R.string.st_all_settings),
+            val shown = groups.sumOf { it.second.size }
+            val more = everything().sumOf { it.second.size } - shown
+            val all = b.card()
+            b.navRow(all, getString(R.string.st_all_settings),
                 getString(R.string.st_all_settings_sub, more),
                 android.view.View.OnClickListener {
                     startActivity(Intent(this, SettingsActivity::class.java).putExtra("all", true))
@@ -212,6 +239,8 @@ class SettingsActivity : BaseSettingsActivity() {
         when (label) {
             getString(R.string.s_search_engine) ->
                 SearchEngineStore(this).default().name
+            getString(R.string.m_night) ->
+                if (prefs.getBoolean("force_dark", false)) "On" else "Off"
             getString(R.string.s_appearance) ->
                 when (prefs.getString("theme_mode", "dark")) {
                     "light" -> "Light"
