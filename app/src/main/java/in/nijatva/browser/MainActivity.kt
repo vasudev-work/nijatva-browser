@@ -2866,9 +2866,18 @@ document.open();document.write(h);document.close();
                 val sm = getSystemService(android.content.Context.SHORTCUT_SERVICE)
                     as android.content.pm.ShortcutManager
                 if (sm.isRequestPinShortcutSupported) {
+                    // the intent has to name this app: a bare ACTION_VIEW is
+                    // handed to whichever browser is default, and the launcher
+                    // then shows that app's splash instead of ours
+                    val open = Intent(this, MainActivity::class.java)
+                        .setAction(Intent.ACTION_VIEW)
+                        .setData(Uri.parse(url))
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     val sc = android.content.pm.ShortcutInfo.Builder(this, "pin-" + System.currentTimeMillis())
                         .setShortLabel(if (title.length > 20) title.substring(0, 20) else title)
-                        .setIntent(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        .setLongLabel(title)
+                        .setIcon(android.graphics.drawable.Icon.createWithResource(this, R.drawable.ic_nijatva_launcher))
+                        .setIntent(open)
                         .build()
                     sm.requestPinShortcut(sc, null)
                     toast(getString(R.string.t_pin_requested))
