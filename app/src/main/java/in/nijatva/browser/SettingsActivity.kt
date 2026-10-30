@@ -44,28 +44,25 @@ class SettingsActivity : BaseSettingsActivity() {
     private fun tier1(): List<Pair<String, List<Item>>> = listOf(
         getString(R.string.sec_basics) to listOf(
             row(R.string.s_search_engine) { go(SearchEngineActivity::class.java) },
-            row(R.string.hp_title) { go(HomepageActivity::class.java) }
-        ),
-        getString(R.string.sec_autofill) to listOf(
-            row(R.string.r_autofill) { go(AutofillActivity::class.java) },
-            row(R.string.s_passwords) { go(PasswordsActivity::class.java) }
+            row(R.string.hp_title) { go(HomepageActivity::class.java) },
+            row(R.string.r_languages) { go(LanguagesActivity::class.java) }
         ),
         getString(R.string.sec_appearance) to listOf(
-            row(R.string.s_accessibility) { go(AppearanceActivity::class.java) },
-            Item(getString(R.string.m_night)) { toggleNight() },
-            row(R.string.s_tabs) { go(TabsActivity::class.java) },
             row(R.string.s_appearance) { go(AppearanceActivity::class.java) },
-            row(R.string.s_toolbar_nav) { go(ToolbarActivity::class.java) }
+            row(R.string.s_toolbar_nav) { go(ToolbarActivity::class.java) },
+            row(R.string.s_tabs) { go(TabsActivity::class.java) },
+            Item(getString(R.string.m_night)) { toggleNight() }
         ),
         getString(R.string.sec_privacy) to listOf(
-            row(R.string.s_clear_data) { go(PrivacyActivity::class.java) },
-            row(R.string.r_privacy_dashboard) { go(PrivacyActivity::class.java) }
+            row(R.string.ab_title) { go(AdBlockActivity::class.java) },
+            row(R.string.r_privacy_dashboard) { go(PrivacyActivity::class.java) },
+            row(R.string.s_permissions) { go(SitePermissionsActivity::class.java) }
         ),
-        getString(R.string.sec_advanced) to listOf(
-            row(R.string.s_permissions) { go(SitePermissionsActivity::class.java) },
-            row(R.string.r_languages) { go(LanguagesActivity::class.java) },
+        getString(R.string.sec_reading) to listOf(
             row(R.string.s_reader_translate) { go(ReadingActivity::class.java) },
-            row(R.string.dls_title) { go(DownloadSettingsActivity::class.java) },
+            row(R.string.dls_title) { go(DownloadSettingsActivity::class.java) }
+        ),
+        getString(R.string.sec_about) to listOf(
             row(R.string.r_about) { go(AboutActivity::class.java) }
         )
     )
@@ -181,8 +178,9 @@ class SettingsActivity : BaseSettingsActivity() {
                 }
             }
 
-            val shown = groups.sumOf { it.second.size }
-            val more = everything().sumOf { it.second.size } - shown
+            val shown = groups.flatMap { it.second }.map { it.label }.toSet()
+            val more = everything().flatMap { it.second }
+                .count { it.label !in shown }
             val all = b.card()
             b.navRow(all, getString(R.string.st_all_settings),
                 getString(R.string.st_all_settings_sub, more),
@@ -193,10 +191,13 @@ class SettingsActivity : BaseSettingsActivity() {
         }
 
         b.section(getString(R.string.st_all_settings))
+        val already = tier1().flatMap { it.second }.map { it.label }.toSet()
         for ((title, items) in everything()) {
+            val kept = items.filter { it.label !in already }
+            if (kept.isEmpty()) continue
             b.section(title)
             val card = b.card()
-            for (item in items) {
+            for (item in kept) {
                 b.navRow(card, item.label, subtitle(item.label),
                     android.view.View.OnClickListener { item.action() })
             }
@@ -239,6 +240,8 @@ class SettingsActivity : BaseSettingsActivity() {
         when (label) {
             getString(R.string.s_search_engine) ->
                 SearchEngineStore(this).default().name
+            getString(R.string.ab_title) ->
+                if (prefs.getBoolean("block_ads", true)) "On" else "Off"
             getString(R.string.m_night) ->
                 if (prefs.getBoolean("force_dark", false)) "On" else "Off"
             getString(R.string.s_appearance) ->
