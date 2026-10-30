@@ -1759,11 +1759,14 @@ document.open();document.write(h);document.close();
     }
 
     /** Tell the store page a card was installed, so it flips in place. */
+    /** The tab showing the store, so the callback lands where it was asked. */
+    private var storeTab: NijatvaWebView? = null
+
     private fun markInstalled(id: String) {
         try {
             val js = "window.__nijatvaInstalled&&window.__nijatvaInstalled(" +
                 org.json.JSONObject.quote(id) + ")"
-            cur()?.evaluateJavascript(js, null)
+            (storeTab ?: cur())?.evaluateJavascript(js, null)
         } catch (_: Exception) { }
     }
 
@@ -1781,6 +1784,7 @@ document.open();document.write(h);document.close();
             "voice" -> voiceSearch()
             "mute" -> toggleMediaMute()
             "store" -> {
+                storeTab = cur()
                 // hand the store what it cannot know: what is installed, and the
                 // scripts that ship with the app rather than in the repository
                 val have = try {
@@ -1869,7 +1873,13 @@ document.open();document.write(h);document.close();
                                 val slug = name.lowercase().replace(Regex("[^a-z0-9]+"), "-").trim('-')
                                 val wanted = uri.getQueryParameter("i") ?: ""
                                 val id = wanted.ifBlank { "web-" + slug + "-" + (System.currentTimeMillis() % 100000) }
-                                ExtensionStore(this).add(
+                                val store = ExtensionStore(this)
+                                if (store.getAll().any { it.id == id }) {
+                                    toast(getString(R.string.ext_already))
+                                    markInstalled(id)
+                                    return@runOnUiThread
+                                }
+                                store.add(
                                     Extension(
                                         id = id, name = name,
                                         pattern = pat.ifBlank { meta.pattern.ifBlank { "*" } },

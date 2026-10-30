@@ -248,10 +248,10 @@
     '</div>';
   }
 
-  function listFor(term) {
+  function listFor(term, ignoreCat) {
     term = (term || '').toLowerCase().trim();
     return all.filter(function (e) {
-      if (cat !== 'All Items' && (e.category || 'Other') !== cat) return false;
+      if (!ignoreCat && cat !== 'All Items' && (e.category || 'Other') !== cat) return false;
       if (!term) return true;
       return (e.name || '').toLowerCase().indexOf(term) >= 0 ||
              (e.desc || '').toLowerCase().indexOf(term) >= 0 ||
@@ -282,7 +282,7 @@
     }
 
     if (view === 'discover') {
-      var rec = listFor(term).slice(0, 3);
+      var rec = listFor(term, true).slice(0, 3);
       var html2 =
         '<div class="hero">' +
           '<span class="chip">NIJATVA WEB STORE FEATURED</span>' +

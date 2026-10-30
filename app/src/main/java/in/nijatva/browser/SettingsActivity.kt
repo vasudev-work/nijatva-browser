@@ -155,7 +155,7 @@ class SettingsActivity : BaseSettingsActivity() {
             b.section(getString(R.string.st_search_results))
             val card = b.card()
             var first = true
-            for ((_, items) in everything()) {
+            for ((_, items) in tier1() + everything()) {
                 for (item in items) {
                     if (!item.label.contains(query, true)) continue
                     if (!first) b.divider(card)
