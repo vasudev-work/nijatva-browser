@@ -1764,15 +1764,61 @@ document.open();document.write(h);document.close();
             "voice" -> voiceSearch()
             "mute" -> toggleMediaMute()
             "store" -> {
-                // hand the store the ids already installed, so it can say so
+                // hand the store what it cannot know: what is installed, and the
+                // scripts that ship with the app rather than in the repository
                 val have = try {
                     ExtensionStore(this).getAll().joinToString(",") { it.id }
                 } catch (_: Exception) { "" }
-                go("file:///android_asset/store.html?installed=" + Uri.encode(have))
+                val built = try {
+                    val cats = mapOf(
+                        "builtin-dark" to "Accessibility", "builtin-font" to "Accessibility",
+                        "builtin-cookie" to "Privacy", "builtin-json" to "Developer Tools",
+                        "builtin-ryd" to "YouTube", "builtin-media" to "Productivity",
+                        "builtin-bgplay" to "Productivity", "builtin-target" to "Productivity",
+                        "cat-shorts" to "YouTube", "cat-ytad" to "YouTube",
+                        "cat-noautoplay" to "YouTube", "cat-widegh" to "Developer Tools",
+                        "cat-sticky" to "Productivity", "cat-wiki" to "Reading",
+                        "cat-read" to "Accessibility", "cat-gray" to "Accessibility")
+                    ExtensionStore(this).catalog().joinToString("|") { e ->
+                        listOf(e.id, e.name, e.desc.take(70), e.pattern, cats[e.id] ?: "Other")
+                            .joinToString("~")
+                    }
+                } catch (_: Exception) { "" }
+                val th = try {
+                    when {
+                        prefs.getBoolean("amoled_ui", false) &&
+                            (prefs.getString("theme_mode", "dark") != "light") -> "amoled"
+                        else -> (if (prefs.getString("theme_brand", "nijatva") == "quiet") "quiet-" else "nijatva-") +
+                            (if (prefs.getString("theme_mode", "dark") == "light") "light" else "dark")
+                    }
+                } catch (_: Exception) { "" }
+                go("file:///android_asset/store.html?installed=" + Uri.encode(have) +
+                    "&builtin=" + Uri.encode(built) + "&theme=" + Uri.encode(th))
+            }
+            "theme" -> {
+                val name = uri.getQueryParameter("name") ?: ""
+                val e = prefs.edit()
+                when (name) {
+                    "nijatva-dark" -> e.putString("theme_mode", "dark").putString("theme_brand", "nijatva").putBoolean("amoled_ui", false)
+                    "nijatva-light" -> e.putString("theme_mode", "light").putString("theme_brand", "nijatva").putBoolean("amoled_ui", false)
+                    "quiet-dark" -> e.putString("theme_mode", "dark").putString("theme_brand", "quiet").putBoolean("amoled_ui", false)
+                    "quiet-light" -> e.putString("theme_mode", "light").putString("theme_brand", "quiet").putBoolean("amoled_ui", false)
+                    "amoled" -> e.putString("theme_mode", "dark").putBoolean("amoled_ui", true)
+                }
+                e.apply()
+                try { recreate() } catch (_: Exception) { }
             }
             "appearance" -> startActivity(Intent(this, AppearanceActivity::class.java))
             "settings" -> startActivity(Intent(this, SettingsActivity::class.java))
             "install" -> {
+                val builtin = uri.getQueryParameter("b")
+                if (!builtin.isNullOrBlank()) {
+                    try {
+                        startActivity(Intent(this, ExtensionsActivity::class.java)
+                            .putExtra("install_builtin", builtin))
+                    } catch (_: Exception) { }
+                    return
+                }
                 val script = uri.getQueryParameter("u")
                 if (!script.isNullOrBlank()) {
                     try {

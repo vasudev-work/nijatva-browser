@@ -171,12 +171,13 @@
   BASE = 'https://raw.githubusercontent.com/vasudev-work/nijatva-browser/main/extensions/';
   var COL = ['#1a73e8', '#0c9054', '#e2543a', '#c13584', '#7b4bff', '#00a8a2', '#f5a623'];
   var THEMES = [
-    { name: 'Nijatva Dark', desc: 'Blue and green on matte black - the default.', cat: 'Appearance' },
-    { name: 'Nijatva Light', desc: 'The same palette on white, for daylight.', cat: 'Appearance' },
-    { name: 'Quiet Nature', desc: 'Forest green and sage, in dark or ivory.', cat: 'Appearance' },
-    { name: 'AMOLED Black', desc: 'Pure black surfaces for OLED screens.', cat: 'Accessibility' }
+    { key: 'nijatva-dark',  name: 'Nijatva Dark',  desc: 'Blue and green on matte black - the default.', cat: 'Appearance' },
+    { key: 'nijatva-light', name: 'Nijatva Light', desc: 'The same palette on white, for daylight.', cat: 'Appearance' },
+    { key: 'quiet-dark',    name: 'Quiet Nature Dark',  desc: 'Forest green and sage, easy on the eye at night.', cat: 'Appearance' },
+    { key: 'quiet-light',   name: 'Quiet Nature Light', desc: 'The sage palette on ivory.', cat: 'Appearance' },
+    { key: 'amoled',        name: 'AMOLED Black', desc: 'Pure black surfaces for OLED screens.', cat: 'Accessibility' }
   ];
-  var all = [], view = 'discover', cat = 'All Items', theme = 'dark';
+  var all = [], builtins = [], view = 'discover', cat = 'All Items', theme = 'dark';
   var installed = {};
 
   var q = document.getElementById('q');
@@ -185,9 +186,19 @@
   var side = document.getElementById('side');
 
   // ids the app already has, handed over in the URL
+  var currentTheme = '';
   try {
-    var p = new URLSearchParams(location.search).get('installed') || '';
-    p.split(',').forEach(function (x) { if (x) installed[x.trim()] = 1; });
+    var sp = new URLSearchParams(location.search);
+    (sp.get('installed') || '').split(',').forEach(function (x) { if (x) installed[x.trim()] = 1; });
+    currentTheme = sp.get('theme') || '';
+    // scripts that ship inside the app: id~name~desc~pattern~category, joined by |
+    (sp.get('builtin') || '').split('|').forEach(function (row) {
+      if (!row) return;
+      var f = row.split('~');
+      if (!f[0]) return;
+      builtins.push({ id: f[0], name: f[1] || f[0], desc: f[2] || '', pattern: f[3] || '*',
+                      category: f[4] || 'Other', file: '', version: 'built in', fromApp: true });
+    });
   } catch (e) { }
 
   function esc(s) {
@@ -205,8 +216,10 @@
   function card(e, i) {
     var nm = e.name || 'Extension';
     var isOn = installed[e.id] ? true : false;
-    var link = 'nijatva://install?u=' + encodeURIComponent(BASE + (e.file || '')) +
-               '&n=' + encodeURIComponent(nm) + '&p=' + encodeURIComponent(e.pattern || '*');
+    var link = e.fromApp
+      ? 'nijatva://install?b=' + encodeURIComponent(e.id)
+      : 'nijatva://install?u=' + encodeURIComponent(BASE + (e.file || '')) +
+        '&n=' + encodeURIComponent(nm) + '&p=' + encodeURIComponent(e.pattern || '*');
     var btn = isOn
       ? '<span class="add on">Installed</span>'
       : '<a class="add" href="' + esc(link) + '">+ Add</a>';
@@ -248,7 +261,10 @@
           '<div class="c-meta"><span>built in</span><span>·</span><span>no download</span></div></div></div>' +
           '<div class="c-desc">' + esc(t.desc) + '</div>' +
           '<div class="c-foot"><span class="cat">' + esc(t.cat) + '</span>' +
-          '<a class="add" href="nijatva://appearance">Open</a></div></div>';
+          (currentTheme === t.key
+            ? '<span class="add on">In use</span>'
+            : '<a class="add" href="nijatva://theme?name=' + encodeURIComponent(t.key) + '">Apply</a>') +
+          '</div></div>';
       });
       viewEl.innerHTML = html;
       return;
@@ -309,9 +325,11 @@
   function openSheet(e) {
     var nm = e.name || 'Extension';
     var isOn = installed[e.id] ? true : false;
-    var src = BASE + (e.file || '');
-    var link = 'nijatva://install?u=' + encodeURIComponent(src) +
-               '&n=' + encodeURIComponent(nm) + '&p=' + encodeURIComponent(e.pattern || '*');
+    var src = e.fromApp ? '' : BASE + (e.file || '');
+    var link = e.fromApp
+      ? 'nijatva://install?b=' + encodeURIComponent(e.id)
+      : 'nijatva://install?u=' + encodeURIComponent(src) +
+        '&n=' + encodeURIComponent(nm) + '&p=' + encodeURIComponent(e.pattern || '*');
     var action = isOn
       ? '<span class="add on">Installed</span>'
       : '<a class="add" href="' + esc(link) + '">Add to Nijatva</a>';
@@ -326,7 +344,7 @@
       '<div class="kv"><span>Runs on</span><span>' + esc(e.pattern || '*') + '</span></div>' +
       '<div class="kv"><span>Type</span><span>Userscript, injected into the page</span></div>' +
       '<div class="kv"><span>Needs</span><span>Nothing outside the page</span></div>' +
-      '<div class="kv"><span>Source</span><span>' + esc(e.file || '') + '</span></div>' +
+      '<div class="kv"><span>Source</span><span>' + esc(e.fromApp ? 'ships with the app' : (e.file || '')) + '</span></div>' +
       '<div class="s-actions">' +
         '<a class="ghost" href="' + esc(src) + '">View source</a>' + action +
       '</div>';
@@ -345,7 +363,10 @@
     xhr.onload = function () {
       try {
         var d = JSON.parse(xhr.responseText);
-        all = (d.extensions || []).slice();
+        var remote = (d.extensions || []).slice();
+        var seen = {};
+        all = remote.concat(builtins.filter(function (b) { return !seen[b.id]; }));
+        all = all.filter(function (e) { if (seen[e.id]) return false; seen[e.id] = 1; return true; });
         renderCats();
         render();
       } catch (e) { viewEl.innerHTML = '<div class="state">The list could not be read.</div>'; }

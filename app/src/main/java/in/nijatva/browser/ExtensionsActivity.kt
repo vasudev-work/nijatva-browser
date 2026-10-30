@@ -44,6 +44,19 @@ class ExtensionsActivity : BaseSettingsActivity() {
         }
 
     override fun build(b: SettingsBuilder, content: LinearLayout) {
+        // arriving from the store with one of the scripts that ships in the app
+        val wantBuiltin = intent?.getStringExtra("install_builtin")
+        if (!wantBuiltin.isNullOrBlank() && !installing) {
+            installing = true
+            intent?.removeExtra("install_builtin")
+            val e = try { store.catalog().firstOrNull { it.id == wantBuiltin } } catch (_: Exception) { null }
+            if (e == null) toast(getString(R.string.ext_load_failed))
+            else {
+                store.add(e.copy(enabled = true))
+                toast(getString(R.string.ext_installed_toast, e.name))
+            }
+        }
+
         // arriving from the store: nijatva://install?u=..&n=..&p=..
         val want = intent?.getStringExtra("install_url")
         if (!want.isNullOrBlank() && !installing) {
