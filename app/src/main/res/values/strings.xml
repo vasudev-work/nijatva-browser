@@ -733,4 +733,5 @@
     <string name="tts_voice_search">Search a language</string>
     <string name="m_night">Night mode</string>
     <string name="m_dev">Developer tools</string>
+    <string name="m_ext_store">Extension store</string>
 </resources>

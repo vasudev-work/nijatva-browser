@@ -824,6 +824,13 @@ document.open();document.write(h);document.close();
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        // a page handed over by another screen, e.g. the extension store
+        val page = intent?.getStringExtra("open_url")
+        if (!page.isNullOrBlank()) {
+            intent.removeExtra("open_url")
+            try { newTab(page) } catch (_: Exception) { }
+            return
+        }
         if (openFromIntent(intent)) return
         if (intent?.getStringExtra("show") == "containers") {
             intent.removeExtra("show")
@@ -2177,6 +2184,8 @@ document.open();document.write(h);document.close();
         b.menuRow(c, R.drawable.ic_bookmark, getString(R.string.m_bookmarks), null, act(5))
         b.menuRow(c, R.drawable.ic_tabs, getString(R.string.m_recent), null, act(2))
         b.menuRow(c, R.drawable.ic_extension, getString(R.string.m_extensions), null, act(24))
+        b.menuRow(c, R.drawable.ic_star, getString(R.string.m_ext_store), null,
+            View.OnClickListener { hideMenuPanel(); handleScheme("nijatva://store") })
         b.menuRow(c, R.drawable.ic_tabs, getString(R.string.m_add_group), null, act(3))
         b.divider(c)
 
