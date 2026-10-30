@@ -13,10 +13,10 @@
     {
       "id": "hide-shorts",
       "name": "Hide YouTube Shorts",
-      "desc": "Remove the Shorts shelves from YouTube",
+      "desc": "Remove the Shorts shelves, phone and desktop",
       "pattern": "*youtube.com*",
       "file": "hide-shorts.js",
-      "version": "1.0",
+      "version": "1.1",
       "category": "Productivity"
     },
     {
@@ -72,69 +72,6 @@
       "file": "dark-scrollbars.js",
       "version": "1.0",
       "category": "Accessibility"
-    },
-    {
-      "id": "search-by-image",
-      "name": "Search by image",
-      "desc": "Reverse image search from any picture",
-      "pattern": "*",
-      "file": "search-by-image.js",
-      "version": "1.0",
-      "category": "Productivity"
-    },
-    {
-      "id": "enable-right-click",
-      "name": "Enable right click",
-      "desc": "Right-click, select and copy on sites that block it",
-      "pattern": "*",
-      "file": "enable-right-click.js",
-      "version": "1.0",
-      "category": "Accessibility"
-    },
-    {
-      "id": "unhook-youtube",
-      "name": "Unhook YouTube",
-      "desc": "Hide recommendations and comments on watch pages",
-      "pattern": "*youtube.com*",
-      "file": "unhook-youtube.js",
-      "version": "1.0",
-      "category": "Productivity"
-    },
-    {
-      "id": "hover-preview",
-      "name": "Hover image preview",
-      "desc": "See the full picture without leaving the page",
-      "pattern": "*",
-      "file": "hover-preview.js",
-      "version": "1.0",
-      "category": "Productivity"
-    },
-    {
-      "id": "ask-anythingllm",
-      "name": "Ask AnythingLLM",
-      "desc": "Ask your own AnythingLLM about the page you are on",
-      "pattern": "*",
-      "file": "ask-anythingllm.js",
-      "version": "1.0",
-      "category": "Productivity"
-    },
-    {
-      "id": "open-directory-search",
-      "name": "Open directory search",
-      "desc": "Find direct download links in open directories",
-      "pattern": "*",
-      "file": "open-directory-search.js",
-      "version": "1.0",
-      "category": "Productivity"
-    },
-    {
-      "id": "filepursuit-search",
-      "name": "FilePursuit search",
-      "desc": "Search FilePursuit's index of open servers",
-      "pattern": "*",
-      "file": "filepursuit-search.js",
-      "version": "1.0",
-      "category": "Productivity"
     }
   ]
 }

@@ -98,14 +98,23 @@ class ExtensionStore(context: Context) {
         Extension(
             "builtin-ryd", "Return YouTube Dislike", "*youtube.com*",
             "(function(){try{var m=location.href.match(/[?&]v=([\\w-]{11})/);if(!m)return;var id=m[1];" +
-                "fetch('https://returnyoutubedislikeapi.com/votes?videoId='+id).then(function(r){return r.json();})" +
-                ".then(function(d){if(typeof d.dislikes!=='number')return;" +
-                "var host=document.querySelector('#top-level-buttons-computed')||document.querySelector('#menu-container');" +
+                "function show(d){if(typeof d.dislikes!=='number')return;" +
+                "var host=document.querySelector('#top-level-buttons-computed')" +
+                "||document.querySelector('ytm-slim-video-action-bar-renderer')" +
+                "||document.querySelector('ytm-menu-renderer')" +
+                "||document.querySelector('#menu-container');" +
                 "if(!host)return;var s=document.getElementById('nijatva-dislikes');" +
                 "if(!s){s=document.createElement('span');s.id='nijatva-dislikes';" +
-                "s.style.cssText='margin-left:10px;font-weight:600';host.appendChild(s);}" +
-                "s.textContent='Dislikes: '+d.dislikes;}).catch(function(){});}catch(e){}})();",
-            false, true, desc = "Show the dislike count again on YouTube"
+                "s.style.cssText='margin-left:10px;font-weight:600;align-self:center';" +
+                "host.appendChild(s);}s.textContent='Dislikes: '+d.dislikes;}" +
+                "var url='https://returnyoutubedislikeapi.com/votes?videoId='+id;" +
+                "if(typeof GM_xmlhttpRequest==='function'){" +
+                "GM_xmlhttpRequest({method:'GET',url:url,onload:function(r){" +
+                "try{show(JSON.parse(r.responseText));}catch(e){}}});" +
+                "}else{fetch(url).then(function(r){return r.json();}).then(show).catch(function(){});}" +
+                "}catch(e){}})();",
+            false, true, desc = "Show the dislike count again on YouTube",
+            grants = listOf("GM_xmlhttpRequest")
         ),
         Extension(
             "builtin-media", "Media sniffer", "*",
@@ -138,14 +147,32 @@ class ExtensionStore(context: Context) {
 
     /** Bundled catalogue shown under "Recommended"; installing copies it into the list. */
     fun catalog(): List<Extension> = listOf(
+        // Mobile YouTube uses ytm-* elements, not the desktop ytd-* ones, and it
+        // reuses a plain shelf for Shorts - so the CSS covers both, and a sweep
+        // hides any shelf whose heading says Shorts.
         Extension("cat-shorts", "Hide YouTube Shorts", "*youtube.com*",
-            "try{var s=document.createElement('style');" +
-                "s.textContent='ytd-reel-shelf-renderer,ytd-rich-shelf-renderer[is-shorts]{display:none!important}';" +
-                "document.documentElement.appendChild(s);}catch(e){}",
-            false, false, "Remove the Shorts shelves from YouTube"),
+            "(function(){try{if(window.__nijatvaShorts)return;window.__nijatvaShorts=1;" +
+                "var CSS='ytd-reel-shelf-renderer,ytd-rich-shelf-renderer[is-shorts],ytd-reel-item-renderer," +
+                "ytm-reel-shelf-renderer,ytm-reel-item-renderer,ytm-shorts-lockup-view-model," +
+                "ytm-shorts-lockup-view-model-v2{display:none!important}';" +
+                "function style(){try{var s=document.getElementById('nijatva-shorts');" +
+                "if(!s){s=document.createElement('style');s.id='nijatva-shorts';" +
+                "s.textContent=CSS;document.documentElement.appendChild(s);}}catch(e){}}" +
+                "var busy=false;function sweep(){if(busy)return;busy=true;try{" +
+                "var n=document.querySelectorAll('h2,h3,ytm-shelf-renderer,ytd-rich-section-renderer');" +
+                "for(var i=0;i<n.length;i++){var tx=(n[i].textContent||'').trim();" +
+                "if(tx!=='Shorts'&&tx.indexOf('Shorts')!==0)continue;var el=n[i];" +
+                "for(var k=0;k<7&&el&&el.parentElement;k++){el=el.parentElement;" +
+                "if(/shelf|reel|section/i.test(el.tagName||'')){el.style.setProperty('display','none','important');break;}}}" +
+                "}catch(e){}busy=false;}" +
+                "style();sweep();document.addEventListener('DOMContentLoaded',function(){style();sweep();});" +
+                "try{new MutationObserver(sweep).observe(document.documentElement,{childList:true,subtree:true});}catch(e){}" +
+                "setInterval(sweep,2500);}catch(e){}})();",
+            false, false, "Remove the Shorts shelves from YouTube, phone and desktop"),
         Extension("cat-ytad", "Skip YouTube ads", "*youtube.com*",
             "(function(){setInterval(function(){try{var b=document.querySelector(" +
-                "'.ytp-ad-skip-button,.ytp-skip-ad-button,.ytp-ad-skip-button-modern');if(b)b.click();}catch(e){}},1500);})();",
+                "'.ytp-ad-skip-button,.ytp-skip-ad-button,.ytp-ad-skip-button-modern," +
+                ".ytp-ad-skip-button-container button,.ytp-skip-ad-button__text');if(b)b.click();}catch(e){}},1500);})();",
             false, false, "Click the Skip button as soon as it appears"),
         Extension("cat-noautoplay", "Stop video autoplay", "*",
             "(function(){setInterval(function(){try{document.querySelectorAll('video').forEach(function(v){" +
