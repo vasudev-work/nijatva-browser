@@ -659,6 +659,7 @@ document.open();document.write(h);document.close();
             val s = w.settings
             s.javaScriptEnabled = js && p != Profiles.RESTRICTED
             s.blockNetworkImage = !images || p == Profiles.RESTRICTED
+            s.textZoom = prefs.getInt("zoom_" + host, textZoom)
         } catch (_: Exception) { }
     }
 
@@ -1280,6 +1281,12 @@ document.open();document.write(h);document.close();
             "if(s===null||s===undefined||s==='')return d;return JSON.parse(s);}catch(x){return d;}};" +
             "window.GM_deleteValue=function(k){try{NijatvaGM.deleteValue(ID,String(k));}catch(x){}};" +
             "window.GM_listValues=function(){try{return JSON.parse(NijatvaGM.listValues(ID));}catch(x){return [];}};" +
+            "window.GM_openInTab=function(u){try{NijatvaGM.openInTab(String(u));}catch(x){}};" +
+            "window.GM_setClipboard=function(t){try{NijatvaGM.clipboard(String(t));}catch(x){}};" +
+            "window.GM_notification=function(o){try{o=o||{};NijatvaGM.notify(ID,String(o.title||''),String(o.text||''));}catch(x){}};" +
+            "window.GM_addElement=function(tag,o){try{var e=document.createElement(String(tag));" +
+            "if(o&&o.attributes)for(var k in o.attributes)e.setAttribute(k,o.attributes[k]);" +
+            "if(o&&o.innerHTML)e.innerHTML=o.innerHTML;document.documentElement.appendChild(e);return e;}catch(x){return null;}};" +
             "window.GM_log=function(){try{NijatvaGM.log(ID,Array.prototype.slice.call(arguments).join(' '));}catch(x){}};" +
             "window.GM_addStyle=function(css){try{var s=document.createElement('style');s.textContent=css;" +
             "(document.head||document.documentElement).appendChild(s);return s;}catch(x){return null;}};" +
@@ -1350,6 +1357,43 @@ document.open();document.write(h);document.close();
 
     /** Native half of GM_xmlhttpRequest. */
     inner class GmBridge {
+        @android.webkit.JavascriptInterface
+        fun openInTab(url: String) {
+            runOnUiThread { try { newTab(url) } catch (_: Exception) { } }
+        }
+
+        @android.webkit.JavascriptInterface
+        fun clipboard(text: String) {
+            runOnUiThread {
+                try {
+                    val cm = getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+                        as android.content.ClipboardManager
+                    cm.setPrimaryClip(android.content.ClipData.newPlainText("Nijatva", text))
+                } catch (_: Exception) { }
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        fun notify(extId: String, title: String, body: String) {
+            runOnUiThread {
+                try {
+                    val nm = getSystemService(android.content.Context.NOTIFICATION_SERVICE)
+                        as android.app.NotificationManager
+                    if (Build.VERSION.SDK_INT >= 26) {
+                        nm.createNotificationChannel(
+                            android.app.NotificationChannel("ext", "Extensions",
+                                android.app.NotificationManager.IMPORTANCE_DEFAULT))
+                    }
+                    val n = if (Build.VERSION.SDK_INT >= 26)
+                        android.app.Notification.Builder(this, "ext")
+                    else @Suppress("DEPRECATION") android.app.Notification.Builder(this)
+                    nm.notify((System.currentTimeMillis() % 100000).toInt(),
+                        n.setContentTitle(title).setContentText(body)
+                            .setSmallIcon(R.drawable.ic_nijatva_launcher).build())
+                } catch (_: Exception) { }
+            }
+        }
+
         @android.webkit.JavascriptInterface
         fun setValue(extId: String, key: String, value: String) {
             try { gmPrefs(extId).edit().putString(key, value).apply() } catch (_: Exception) { }
@@ -1747,7 +1791,10 @@ document.open();document.write(h);document.close();
         if (u.isEmpty()) return
         if (u.startsWith("nijatva://")) { handleScheme(u); return }
         if (!u.startsWith("http://") && !u.startsWith("https://") && !u.startsWith("file:")) {
-            u = if (u.contains(" ") || !u.contains(".")) searchFor(u) else "https://$u"
+            // a known first word sends the rest to that site instead of the
+            // default engine: "yt lofi" searches YouTube
+            val shortcut = if (u.contains(" ")) shortcutFor(u) else null
+            u = shortcut ?: if (u.contains(" ") || !u.contains(".")) searchFor(u) else "https://$u"
         }
         if (prefs.getBoolean("https_only", true) && u.startsWith("http://")) {
             u = "https://" + u.substring(7)
@@ -2394,7 +2441,11 @@ document.open();document.write(h);document.close();
         if (z < 50) z = 50
         if (z > 200) z = 200
         textZoom = z
-        prefs.edit().putInt("zoom", z).apply()
+        val e = prefs.edit().putInt("zoom", z)
+        // remember it for this site as well, so it comes back next time
+        val host = try { Uri.parse(cur()?.url ?: "").host ?: "" } catch (_: Exception) { "" }
+        if (host.isNotBlank()) e.putInt("zoom_" + host, z)
+        e.apply()
         cur()?.settings?.textZoom = z
     }
 
@@ -2991,6 +3042,49 @@ document.open();document.write(h);document.close();
         } finally {
             c?.disconnect()
         }
+    }
+
+    /** "yt cats" and friends. The list is fixed so nothing needs setting up. */
+    private fun shortcutFor(input: String): String? {
+        val key = input.substringBefore(' ').lowercase()
+        val rest = input.substringAfter(' ').trim()
+        if (rest.isEmpty()) return null
+        val base = when (key) {
+            "g" -> "https://www.google.com/search?q="
+            "yt" -> "https://m.youtube.com/results?search_query="
+            "wk" -> "https://en.wikipedia.org/w/index.php?search="
+            "gh" -> "https://github.com/search?q="
+            "ddg" -> "https://duckduckgo.com/?q="
+            "amz" -> "https://www.amazon.in/s?k="
+            "sp" -> "https://www.startpage.com/sp/search?query="
+            else -> return null
+        }
+        return base + android.net.Uri.encode(rest)
+    }
+
+    /**
+     * A video that is playing follows you into a small window when you leave
+     * the app, so audio and picture do not stop on the way out.
+     */
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (Build.VERSION.SDK_INT < 26) return
+        if (!prefs.getBoolean("pip", true)) return
+        val w = cur() ?: return
+        try {
+            w.evaluateJavascript(
+                "(function(){try{var v=document.querySelector('video');" +
+                    "return !!(v && !v.paused && !v.ended && v.currentTime > 0);}catch(e){return false;}})()"
+            ) { r ->
+                if (r == "true") {
+                    try {
+                        val b = android.app.PictureInPictureParams.Builder()
+                        b.setAspectRatio(android.util.Rational(16, 9))
+                        enterPictureInPictureMode(b.build())
+                    } catch (_: Exception) { }
+                }
+            }
+        } catch (_: Exception) { }
     }
 
     private fun searchFor(q: String): String = engineStore.urlFor(q)

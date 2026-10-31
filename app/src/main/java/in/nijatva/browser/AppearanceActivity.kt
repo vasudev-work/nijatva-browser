@@ -84,6 +84,10 @@ class AppearanceActivity : BaseSettingsActivity() {
             prefs.edit().putBoolean("scrollbars", on).apply()
         }
         b.divider(c4)
+        b.switchRow(c4, getString(R.string.ap_pip), getString(R.string.ap_pip_sum),
+            prefs.getBoolean("pip", true)) { _, on ->
+            prefs.edit().putBoolean("pip", on).apply()
+        }
         b.switchRow(c4, getString(R.string.ap_immersive), getString(R.string.ap_immersive_sum),
             prefs.getBoolean("immersive", false)) { _, on ->
             prefs.edit().putBoolean("immersive", on).apply()

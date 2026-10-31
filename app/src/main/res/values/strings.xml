@@ -748,4 +748,6 @@
     <string name="ext_long_press_hint">Long-press an installed extension to remove it.</string>
     <string name="hist_other_apps">You may see the history from other apps that open links in Nijatva.</string>
     <string name="hist_delete_data">Delete browsing data…</string>
+    <string name="ap_pip">Picture in picture</string>
+    <string name="ap_pip_sum">Keep a playing video in a small window when you leave</string>
 </resources>
