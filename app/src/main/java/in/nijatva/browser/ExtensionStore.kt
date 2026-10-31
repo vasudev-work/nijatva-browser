@@ -169,10 +169,22 @@ class ExtensionStore(context: Context) {
                 "try{new MutationObserver(sweep).observe(document.documentElement,{childList:true,subtree:true});}catch(e){}" +
                 "setInterval(sweep,2500);}catch(e){}})();",
             false, false, "Remove the Shorts shelves from YouTube, phone and desktop"),
+        // phones draw a plain button that only says Skip, so the label is
+        // matched too - but only inside the player, never elsewhere on the page
         Extension("cat-ytad", "Skip YouTube ads", "*youtube.com*",
-            "(function(){setInterval(function(){try{var b=document.querySelector(" +
-                "'.ytp-ad-skip-button,.ytp-skip-ad-button,.ytp-ad-skip-button-modern," +
-                ".ytp-ad-skip-button-container button,.ytp-skip-ad-button__text');if(b)b.click();}catch(e){}},1500);})();",
+            "(function(){try{if(window.__nijatvaSkip)return;window.__nijatvaSkip=1;" +
+                "function run(){try{" +
+                "var b=document.querySelector('.ytp-ad-skip-button,.ytp-skip-ad-button," +
+                ".ytp-ad-skip-button-modern,.ytp-ad-skip-button-container button');" +
+                "if(b){b.click();return;}" +
+                "var box=document.querySelector('#movie_player,.html5-video-player,ytm-player');" +
+                "if(!box)return;" +
+                "var c=box.querySelectorAll('button,[role=button],yt-button-renderer');" +
+                "for(var i=0;i<c.length;i++){var tx=(c[i].textContent||'').trim().toLowerCase();" +
+                "if(tx==='skip'||tx==='skip ad'||tx==='skip ads'||tx==='skip advertisement'){" +
+                "c[i].click();return;}}" +
+                "}catch(e){}}" +
+                "run();setInterval(run,1200);}catch(e){}})();",
             false, false, "Click the Skip button as soon as it appears"),
         Extension("cat-noautoplay", "Stop video autoplay", "*",
             "(function(){setInterval(function(){try{document.querySelectorAll('video').forEach(function(v){" +
