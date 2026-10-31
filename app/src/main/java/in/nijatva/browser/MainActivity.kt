@@ -1366,7 +1366,7 @@ document.open();document.write(h);document.close();
         fun clipboard(text: String) {
             runOnUiThread {
                 try {
-                    val cm = getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+                    val cm = this@MainActivity.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
                         as android.content.ClipboardManager
                     cm.setPrimaryClip(android.content.ClipData.newPlainText("Nijatva", text))
                 } catch (_: Exception) { }
@@ -1377,7 +1377,7 @@ document.open();document.write(h);document.close();
         fun notify(extId: String, title: String, body: String) {
             runOnUiThread {
                 try {
-                    val nm = getSystemService(android.content.Context.NOTIFICATION_SERVICE)
+                    val nm = this@MainActivity.getSystemService(android.content.Context.NOTIFICATION_SERVICE)
                         as android.app.NotificationManager
                     if (Build.VERSION.SDK_INT >= 26) {
                         nm.createNotificationChannel(
@@ -1385,8 +1385,8 @@ document.open();document.write(h);document.close();
                                 android.app.NotificationManager.IMPORTANCE_DEFAULT))
                     }
                     val n = if (Build.VERSION.SDK_INT >= 26)
-                        android.app.Notification.Builder(this, "ext")
-                    else @Suppress("DEPRECATION") android.app.Notification.Builder(this)
+                        android.app.Notification.Builder(this@MainActivity, "ext")
+                    else @Suppress("DEPRECATION") android.app.Notification.Builder(this@MainActivity)
                     nm.notify((System.currentTimeMillis() % 100000).toInt(),
                         n.setContentTitle(title).setContentText(body)
                             .setSmallIcon(R.drawable.ic_nijatva_launcher).build())
