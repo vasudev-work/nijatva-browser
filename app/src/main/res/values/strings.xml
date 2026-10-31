@@ -746,4 +746,6 @@
     <string name="ext_remove_msg">Remove %1$s? Its script is deleted from this device.</string>
     <string name="ext_removed_toast">Removed %1$s</string>
     <string name="ext_long_press_hint">Long-press an installed extension to remove it.</string>
+    <string name="hist_other_apps">You may see the history from other apps that open links in Nijatva.</string>
+    <string name="hist_delete_data">Delete browsing data…</string>
 </resources>
