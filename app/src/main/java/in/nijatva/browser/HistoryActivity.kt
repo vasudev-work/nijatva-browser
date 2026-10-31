@@ -47,7 +47,7 @@ class HistoryActivity : BaseSettingsActivity() {
                     card = b.card()
                 }
                 val target = card ?: continue
-                entryRow(target, item.first, item.second) { delete(item.second, item.third) }
+                entryRow(b, target, item.first, item.second) { delete(item.second, item.third) }
             }
         }
 
@@ -101,7 +101,7 @@ class HistoryActivity : BaseSettingsActivity() {
      * it, and a cross that removes just this entry - the way the reference does
      * it, in one row rather than two.
      */
-    private fun entryRow(card: LinearLayout, title: String, url: String, onDelete: () -> Unit) {
+    private fun entryRow(b: SettingsBuilder, card: LinearLayout, title: String, url: String, onDelete: () -> Unit) {
         val host = try { android.net.Uri.parse(url).host?.removePrefix("www.") ?: url } catch (_: Exception) { url }
         val label = if (title.isBlank()) host else title
 
