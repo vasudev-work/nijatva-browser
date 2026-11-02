@@ -61,6 +61,10 @@ import java.util.concurrent.Executor
 class MainActivity : AppCompatActivity() {
 
     companion object {
+
+        /** Where the refreshed filter lists come from - this repository's assets. */
+        const val FILTER_BASE =
+            "https://raw.githubusercontent.com/vasudev-work/nijatva-browser/main/app/src/main/assets/"
         const val PREFS = "nijatva"
 
         /** Drop history entries older than the retention period. */
@@ -402,6 +406,7 @@ document.open();document.write(h);document.close();
 
         val startContainer = active
         if (startContainer != null) loadContainer(startContainer) else newTab(ntpUrl())
+        scheduleFilterRefresh()
         (intent?.getStringExtra("open_url"))?.let { u ->
             intent.removeExtra("open_url")
             try { newTab(u) } catch (_: Exception) { }
@@ -1809,11 +1814,56 @@ document.open();document.write(h);document.close();
     /** The tab showing the store, so the callback lands where it was asked. */
     private var storeTab: android.webkit.WebView? = null
 
+    /** A scanned code: a link opens, anything else becomes a search. */
+    private val scanLauncher = registerForActivityResult(
+        com.journeyapps.barcodescanner.ScanContract()) { res ->
+        val text = res.contents
+        if (!text.isNullOrBlank()) {
+            if (text.startsWith("http://") || text.startsWith("https://")) go(text)
+            else go(searchFor(text))
+        }
+    }
+
     private fun markInstalled(id: String) {
         try {
             val js = "window.__nijatvaInstalled&&window.__nijatvaInstalled(" +
                 org.json.JSONObject.quote(id) + ")"
             (storeTab ?: cur())?.evaluateJavascript(js, null)
+        } catch (_: Exception) { }
+    }
+
+    /** Scan a QR code and open whatever it points at. */
+    private fun scanQr() {
+        try {
+            val o = com.journeyapps.barcodescanner.ScanOptions()
+            o.setDesiredBarcodeFormats(com.journeyapps.barcodescanner.ScanOptions.QR_CODE)
+            o.setPrompt(getString(R.string.qr_prompt))
+            o.setBeepEnabled(false)
+            o.setOrientationLocked(false)
+            scanLauncher.launch(o)
+        } catch (_: Exception) {
+            toast(getString(R.string.qr_failed))
+        }
+    }
+
+    /**
+     * Ask WorkManager to refresh the filter lists weekly. It waits for an
+     * unmetered connection, so nothing runs on mobile data.
+     */
+    private fun scheduleFilterRefresh() {
+        try {
+            val req = androidx.work.PeriodicWorkRequestBuilder<FilterRefreshWorker>(
+                7, java.util.concurrent.TimeUnit.DAYS)
+                .setConstraints(
+                    androidx.work.Constraints.Builder()
+                        .setRequiredNetworkType(androidx.work.NetworkType.UNMETERED)
+                        .build())
+                .setInputData(androidx.work.workDataOf(
+                    FilterRefreshWorker.KEY_BASE to FILTER_BASE))
+                .build()
+            androidx.work.WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                FilterRefreshWorker.WORK,
+                androidx.work.ExistingPeriodicWorkPolicy.KEEP, req)
         } catch (_: Exception) { }
     }
 
@@ -2328,6 +2378,8 @@ document.open();document.write(h);document.close();
         }
         b.menuRow(c, R.drawable.ic_new_tab, getString(R.string.m_new_tab), null, act(0))
         b.menuRow(c, R.drawable.ic_incognito, getString(R.string.m_new_incognito), null, act(1))
+        b.menuRow(c, R.drawable.ic_qr, getString(R.string.m_scan_qr), null,
+            View.OnClickListener { hideMenuPanel(); scanQr() })
         b.divider(c)
 
         // ---- where things live ----

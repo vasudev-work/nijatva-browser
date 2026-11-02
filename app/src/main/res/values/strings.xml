@@ -750,4 +750,7 @@
     <string name="hist_delete_data">Delete browsing data…</string>
     <string name="ap_pip">Picture in picture</string>
     <string name="ap_pip_sum">Keep a playing video in a small window when you leave</string>
+    <string name="m_scan_qr">Scan QR code</string>
+    <string name="qr_prompt">Point at a QR code</string>
+    <string name="qr_failed">No camera app available</string>
 </resources>

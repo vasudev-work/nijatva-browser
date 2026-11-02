@@ -64,4 +64,8 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     // MainActivity wraps the WebView in a SwipeRefreshLayout for pull-to-refresh.
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    // QR scanning, so a code on a poster opens in the browser
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    // weekly refresh of the filter lists, on Wi-Fi only
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }
