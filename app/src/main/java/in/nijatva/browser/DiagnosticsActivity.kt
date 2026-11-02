@@ -213,7 +213,10 @@ class DiagnosticsActivity : BaseSettingsActivity() {
 
     private fun checkFiles(): Boolean = try {
         val f = File(cacheDir, "diag.probe")
-        val ok = f.parentFile?.exists() == true && f.writeText("ok") >= 0 && f.delete()
+        if (f.parentFile?.exists() != true) return false
+        f.writeText("ok")            // writeText returns Unit, not a count
+        val ok = f.length() == 2L
+        f.delete()
         ok
     } catch (_: Exception) { false }
 
