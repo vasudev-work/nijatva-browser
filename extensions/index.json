@@ -148,9 +148,9 @@
       "desc": "Fill in navigator.vendor, the chrome object and Client Hints so sites stop blocking the WebView",
       "pattern": "*",
       "file": "chrome-mask.js",
-      "version": "1.0",
+      "version": "1.1",
       "category": "Privacy",
-      "sha256": "f8c35468e015232455175bcd6387cf508dffce31acdfb9dfa82370d01e522deb"
+      "sha256": "bd70abf0be3abe884ae1e471ddb223441bc66f5549861bc667ab95797fd50738"
     },
     {
       "id": "cosmetic-cleanup",

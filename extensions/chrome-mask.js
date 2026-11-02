@@ -1,3 +1,11 @@
+// ==UserScript==
+// @name        Chrome mask
+// @description Fill in navigator.vendor, the chrome object and Client Hints
+// @match       *
+// @run-at      document-start
+// @grant       none
+// ==/UserScript==
+
 /*
  * Chrome mask
  * -----------
