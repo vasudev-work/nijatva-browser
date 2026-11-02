@@ -2286,6 +2286,14 @@ document.open();document.write(h);document.close();
         menuOpen = true
     }
 
+    /** "12" for a menu row subtitle, or nothing when the list is empty. */
+    private fun countLabel(key: String): String? = try {
+        val raw = prefs.getString(key, "") ?: ""
+        val n = if (key == "bookmarks") raw.split("\n").count { it.contains('\u0001') }
+                else org.json.JSONArray(raw.ifBlank { "[]" }).length()
+        if (n > 0) "" + n else null
+    } catch (_: Exception) { null }
+
     private fun hideMenuPanel() {
         if (!menuOpen) return
         menuOpen = false
@@ -2380,12 +2388,20 @@ document.open();document.write(h);document.close();
         b.menuRow(c, R.drawable.ic_incognito, getString(R.string.m_new_incognito), null, act(1))
         b.menuRow(c, R.drawable.ic_qr, getString(R.string.m_scan_qr), null,
             View.OnClickListener { hideMenuPanel(); scanQr() })
+        val adsOn = prefs.getBoolean("block_ads", true)
+        b.iconValueRow(c, R.drawable.ic_block, getString(R.string.m_block_ads),
+            if (adsOn) "On" else "Off") {
+            prefs.edit().putBoolean("block_ads", !adsOn).apply()
+            try { adBlocker.blockAds = !adsOn } catch (_: Exception) { }
+            try { cur()?.reload() } catch (_: Exception) { }
+            hideMenuPanel()
+        }
         b.divider(c)
 
         // ---- where things live ----
-        b.menuRow(c, R.drawable.ic_history, getString(R.string.m_history), null, act(4))
+        b.menuRow(c, R.drawable.ic_history, getString(R.string.m_history), countLabel("history"), act(4))
         b.menuRow(c, R.drawable.ic_download, getString(R.string.m_downloads), null, act(6))
-        b.menuRow(c, R.drawable.ic_bookmark, getString(R.string.m_bookmarks), null, act(5))
+        b.menuRow(c, R.drawable.ic_bookmark, getString(R.string.m_bookmarks), countLabel("bookmarks"), act(5))
         b.menuRow(c, R.drawable.ic_tabs, getString(R.string.m_recent), null, act(2))
         b.menuRow(c, R.drawable.ic_extension, getString(R.string.m_extensions), null, act(24))
         b.menuRow(c, R.drawable.ic_star, getString(R.string.m_ext_store), null,

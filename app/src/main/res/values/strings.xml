@@ -827,4 +827,5 @@
     <string name="emp_browse">Start browsing</string>
     <string name="emp_hist_title">No history yet</string>
     <string name="emp_hist_sub">Pages you visit will be listed here, grouped by day.</string>
+    <string name="m_block_ads">Block ads</string>
 </resources>
