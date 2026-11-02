@@ -128,9 +128,13 @@ class ExtensionsActivity : BaseSettingsActivity() {
         card.setPadding(dp(14), dp(12), dp(10), dp(12))
         try {
             if (android.os.Build.VERSION.SDK_INT >= 23) {
-                val ta = obtainStyledAttributes(intArrayOf(android.R.attr.selectableItemBackground))
-                card.foreground = ta.getDrawable(0)
+                val ta = obtainStyledAttributes(intArrayOf(android.R.attr.colorControlHighlight))
+                val c = ta.getColor(0, 0x33FFFFFF.toInt())
                 ta.recycle()
+                card.foreground = android.graphics.drawable.RippleDrawable(
+                    android.content.res.ColorStateList.valueOf(c), null, null)
+                card.isFocusable = false
+                card.isFocusableInTouchMode = false
             }
         } catch (_: Exception) { }
         val bg = GradientDrawable()
@@ -389,9 +393,13 @@ class ExtensionsActivity : BaseSettingsActivity() {
         card.setPadding(dp(14), dp(12), dp(10), dp(12))
         try {
             if (android.os.Build.VERSION.SDK_INT >= 23) {
-                val ta = obtainStyledAttributes(intArrayOf(android.R.attr.selectableItemBackground))
-                card.foreground = ta.getDrawable(0)
+                val ta = obtainStyledAttributes(intArrayOf(android.R.attr.colorControlHighlight))
+                val c = ta.getColor(0, 0x33FFFFFF.toInt())
                 ta.recycle()
+                card.foreground = android.graphics.drawable.RippleDrawable(
+                    android.content.res.ColorStateList.valueOf(c), null, null)
+                card.isFocusable = false
+                card.isFocusableInTouchMode = false
             }
         } catch (_: Exception) { }
         val bg = GradientDrawable()

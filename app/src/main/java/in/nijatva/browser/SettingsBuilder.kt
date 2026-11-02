@@ -270,12 +270,19 @@ class SettingsBuilder(private val a: Context, private val root: LinearLayout) {
     }
 
     /** The theme's own ripple, so a tap gives the feedback Material 3 expects. */
+    /**
+     * A ripple that only exists while the finger is down. The theme's
+     * selectableItemBackground also draws a highlight for the focused state, and
+     * a row keeps focus after a tap - which looked like the wrong row was
+     * selected (Exit in the menu, All settings in the list).
+     */
     private val ripple: android.graphics.drawable.Drawable? by lazy {
         try {
-            val ta = a.obtainStyledAttributes(intArrayOf(android.R.attr.selectableItemBackground))
-            val d = ta.getDrawable(0)
+            val ta = a.obtainStyledAttributes(intArrayOf(android.R.attr.colorControlHighlight))
+            val c = ta.getColor(0, 0x33FFFFFF.toInt())
             ta.recycle()
-            d
+            android.graphics.drawable.RippleDrawable(
+                android.content.res.ColorStateList.valueOf(c), null, null)
         } catch (_: Exception) { null }
     }
 
@@ -286,6 +293,8 @@ class SettingsBuilder(private val a: Context, private val root: LinearLayout) {
         r.setPadding(dp(16), dp(15), dp(16), dp(15))
         try {
             if (android.os.Build.VERSION.SDK_INT >= 23) r.foreground = ripple
+            r.isFocusable = false
+            r.isFocusableInTouchMode = false
         } catch (_: Exception) { }
         card.addView(r)
         return r

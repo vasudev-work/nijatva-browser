@@ -111,9 +111,13 @@ class HistoryActivity : BaseSettingsActivity() {
         row.setPadding(dp(14), dp(11), dp(6), dp(11))
         try {
             if (android.os.Build.VERSION.SDK_INT >= 23) {
-                val ta = obtainStyledAttributes(intArrayOf(android.R.attr.selectableItemBackground))
-                row.foreground = ta.getDrawable(0)
+                val ta = obtainStyledAttributes(intArrayOf(android.R.attr.colorControlHighlight))
+                val c = ta.getColor(0, 0x33FFFFFF.toInt())
                 ta.recycle()
+                row.foreground = android.graphics.drawable.RippleDrawable(
+                    android.content.res.ColorStateList.valueOf(c), null, null)
+                row.isFocusable = false
+                row.isFocusableInTouchMode = false
             }
         } catch (_: Exception) { }
 
