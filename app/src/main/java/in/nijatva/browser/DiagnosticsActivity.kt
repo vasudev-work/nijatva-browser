@@ -135,10 +135,6 @@ class DiagnosticsActivity : BaseSettingsActivity() {
         row(b, c, getString(R.string.dg_engines),
             TtsReader.engines().joinToString(", ").ifBlank { getString(R.string.dg_none) })
         row(b, c, getString(R.string.dg_crash), crashInfo(), last = true)
-        b.navRow(c, getString(R.string.dg_speech), getString(R.string.dg_speech_sum),
-            android.view.View.OnClickListener {
-                probeSpeech { info -> showDialog(getString(R.string.dg_speech), info) }
-            })
     }
 
     private fun data(b: SettingsBuilder) {
@@ -169,7 +165,7 @@ class DiagnosticsActivity : BaseSettingsActivity() {
     } catch (_: Exception) { "?" }
 
     private fun webViewVersion(): String = try {
-        android.webkit.WebView.getDefaultUserAgent(this)
+        android.webkit.WebSettings.getDefaultUserAgent(this)
             .substringAfter("Chrome/").substringBefore(" ").ifBlank { "?" }
     } catch (_: Exception) { "?" }
 
@@ -237,11 +233,13 @@ class DiagnosticsActivity : BaseSettingsActivity() {
     /** No password or token should ever sit in plain preferences. */
     private fun checkNoSecrets(): Boolean = try {
         val p = getSharedPreferences(MainActivity.PREFS, Context.MODE_PRIVATE)
-        p.all.keys.none { k ->
+        var bad = false
+        for ((k, v) in p.all) {
             val kk = k.lowercase()
-            (kk.contains("pass") || kk.contains("token") || kk.contains("secret")) &&
-                p.all[k] is String && (p.all[k] as String).length > 8
+            if ((kk.contains("pass") || kk.contains("token") || kk.contains("secret")) &&
+                v is String && v.length > 8) { bad = true; break }
         }
+        !bad
     } catch (_: Exception) { false }
 
     private fun crashInfo(): String = try {
@@ -278,7 +276,8 @@ class DiagnosticsActivity : BaseSettingsActivity() {
         try {
             val cm = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
             cm.setPrimaryClip(android.content.ClipData.newPlainText("diagnostics", sb.toString()))
-            toast(getString(R.string.dg_copied))
+            android.widget.Toast.makeText(this, getString(R.string.dg_copied),
+                android.widget.Toast.LENGTH_SHORT).show()
         } catch (_: Exception) { }
     }
 }
