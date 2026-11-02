@@ -211,14 +211,18 @@ class DiagnosticsActivity : BaseSettingsActivity() {
         p.edit().putString("probe", v).commit() && p.getString("probe", null) == v
     } catch (_: Exception) { false }
 
-    private fun checkFiles(): Boolean = try {
-        val f = File(cacheDir, "diag.probe")
-        if (f.parentFile?.exists() != true) return false
-        f.writeText("ok")            // writeText returns Unit, not a count
-        val ok = f.length() == 2L
-        f.delete()
-        ok
-    } catch (_: Exception) { false }
+    private fun checkFiles(): Boolean {
+        return try {
+            val f = File(cacheDir, "diag.probe")
+            if (f.parentFile?.exists() != true) false
+            else {
+                f.writeText("ok")        // writeText returns Unit, not a count
+                val ok = f.length() == 2L
+                f.delete()
+                ok
+            }
+        } catch (_: Exception) { false }
+    }
 
     private fun checkExtensions(): Boolean = try {
         ExtensionStore(this).getAll().all { it.id.isNotBlank() && it.code.isNotBlank() }
