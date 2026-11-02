@@ -2522,8 +2522,8 @@ document.open();document.write(h);document.close();
     }
 
     private fun openDownloads() {
-        try { startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)) }
-        catch (_: Exception) { toast("Downloads") }
+        try { startActivity(Intent(this, DownloadsActivity::class.java)) }
+        catch (_: Exception) { toast(getString(R.string.dl_title)) }
     }
 
     // ---------- storage (local only) ----------

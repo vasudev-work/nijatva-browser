@@ -753,4 +753,13 @@
     <string name="m_scan_qr">Scan QR code</string>
     <string name="qr_prompt">Point at a QR code</string>
     <string name="qr_failed">No camera app available</string>
+    <string name="dl_title">Downloads</string>
+    <string name="dl_using">Using %1$s of %2$s</string>
+    <string name="dl_empty">Nothing downloaded yet. Files you save from the browser appear here.</string>
+    <string name="dl_all">All</string>
+    <string name="dl_pages">Pages</string>
+    <string name="dl_other">Other</string>
+    <string name="dl_open">Open</string>
+    <string name="dl_share">Share</string>
+    <string name="dl_delete">Delete</string>
 </resources>
