@@ -72,6 +72,15 @@
       "file": "dark-scrollbars.js",
       "version": "1.0",
       "category": "Accessibility"
+    },
+    {
+      "id": "block-youtube-redirect",
+      "name": "Block YouTube redirects",
+      "desc": "A mis-tap on a YouTube ad link does nothing",
+      "pattern": "*",
+      "file": "block-youtube-redirect.js",
+      "version": "1.0",
+      "category": "Take control of tabs"
     }
   ]
 }
