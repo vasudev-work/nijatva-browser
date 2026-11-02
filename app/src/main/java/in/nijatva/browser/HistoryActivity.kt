@@ -109,6 +109,13 @@ class HistoryActivity : BaseSettingsActivity() {
         row.orientation = LinearLayout.HORIZONTAL
         row.gravity = android.view.Gravity.CENTER_VERTICAL
         row.setPadding(dp(14), dp(11), dp(6), dp(11))
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= 23) {
+                val ta = obtainStyledAttributes(intArrayOf(android.R.attr.selectableItemBackground))
+                row.foreground = ta.getDrawable(0)
+                ta.recycle()
+            }
+        } catch (_: Exception) { }
 
         val mark = android.widget.TextView(this)
         mark.text = (label.firstOrNull() ?: '?').uppercaseChar().toString()

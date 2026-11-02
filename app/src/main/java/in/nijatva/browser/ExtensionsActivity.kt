@@ -126,6 +126,13 @@ class ExtensionsActivity : BaseSettingsActivity() {
         card.orientation = LinearLayout.HORIZONTAL
         card.gravity = Gravity.CENTER_VERTICAL
         card.setPadding(dp(14), dp(12), dp(10), dp(12))
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= 23) {
+                val ta = obtainStyledAttributes(intArrayOf(android.R.attr.selectableItemBackground))
+                card.foreground = ta.getDrawable(0)
+                ta.recycle()
+            }
+        } catch (_: Exception) { }
         val bg = GradientDrawable()
         bg.cornerRadius = dp(16).toFloat()
         bg.setColor(attr(R.attr.surfaceColor))
@@ -380,6 +387,13 @@ class ExtensionsActivity : BaseSettingsActivity() {
         card.orientation = LinearLayout.HORIZONTAL
         card.gravity = Gravity.CENTER_VERTICAL
         card.setPadding(dp(14), dp(12), dp(10), dp(12))
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= 23) {
+                val ta = obtainStyledAttributes(intArrayOf(android.R.attr.selectableItemBackground))
+                card.foreground = ta.getDrawable(0)
+                ta.recycle()
+            }
+        } catch (_: Exception) { }
         val bg = GradientDrawable()
         bg.cornerRadius = dp(16).toFloat()
         bg.setColor(attr(R.attr.surfaceColor))

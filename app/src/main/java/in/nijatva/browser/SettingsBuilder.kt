@@ -269,11 +269,24 @@ class SettingsBuilder(private val a: Context, private val root: LinearLayout) {
         root.addView(t)
     }
 
+    /** The theme's own ripple, so a tap gives the feedback Material 3 expects. */
+    private val ripple: android.graphics.drawable.Drawable? by lazy {
+        try {
+            val ta = a.obtainStyledAttributes(intArrayOf(android.R.attr.selectableItemBackground))
+            val d = ta.getDrawable(0)
+            ta.recycle()
+            d
+        } catch (_: Exception) { null }
+    }
+
     private fun rowBase(card: LinearLayout): LinearLayout {
         val r = LinearLayout(a)
         r.orientation = LinearLayout.HORIZONTAL
         r.gravity = Gravity.CENTER_VERTICAL
         r.setPadding(dp(16), dp(15), dp(16), dp(15))
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= 23) r.foreground = ripple
+        } catch (_: Exception) { }
         card.addView(r)
         return r
     }
@@ -285,7 +298,7 @@ class SettingsBuilder(private val a: Context, private val root: LinearLayout) {
         val t = TextView(a)
         t.text = title
         t.setTextColor(color)
-        t.textSize = 15f
+        t.textSize = 16f
         t.maxLines = 1
         t.ellipsize = android.text.TextUtils.TruncateAt.END
         col.addView(t)
