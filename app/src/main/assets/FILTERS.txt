@@ -4,9 +4,13 @@ Nijatva - what is in the bundled filter lists
 Files in this folder, read by AdFilterEngine:
 
   easylist_net.txt.gz       133,213 network rules, one per line
+  easyprivacy_net.txt.gz      4,896 tracker rules
+  hosts_extra.txt.gz         77,759 hosts from the StevenBlack list
   easylist_cosmetic.txt.gz   14,999 element-hiding rules
   ads.txt                        30 ad hosts, written by hand
   trackers.txt                   30 tracker hosts, written by hand
+
+About 216,000 network rules in all, deduplicated by the engine at load time.
 
 Format the engine understands
 -----------------------------
@@ -18,13 +22,17 @@ because the engine turns them into plain CSS.
 
 Where the lists come from
 -------------------------
-The two easylist_* files are derived from the EasyList project
+easylist_net, easyprivacy_net and easylist_cosmetic come from the EasyList project
 (https://easylist.to, github.com/easylist/easylist), which is published under
 Creative Commons Attribution-ShareAlike 3.0 (CC BY-SA 3.0). They are bundled
 here under the same licence, unmodified in substance: only rules the engine
 cannot execute were dropped.
 
-To update them, replace the two .gz files with freshly generated ones in the
+hosts_extra.txt.gz is the StevenBlack unified hosts list
+(github.com/StevenBlack/hosts), MIT licence, converted from 0.0.0.0 lines to
+host anchors.
+
+To update any of them, replace the .gz file with a freshly generated one in the
 same format. Nothing in the code needs to change.
 
 To add your own rules without rebuilding, use Settings - Advanced - URL filters

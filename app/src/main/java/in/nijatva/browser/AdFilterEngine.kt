@@ -27,7 +27,7 @@ object AdFilterEngine {
     private val cosmeticGlobal = StringBuilder()
     private val cosmeticByDomain = HashMap<String, StringBuilder>()
 
-    private const val MAX_HOSTS = 200000
+    private const val MAX_HOSTS = 320000
     private const val MAX_ALLOW_HOSTS = 40000
     private const val MAX_SUBS = 6000
     private const val MAX_ALLOW_SUBS = 2000
@@ -83,9 +83,20 @@ object AdFilterEngine {
         }
     }
 
+    /** Every network list the engine reads, in the order they are loaded. */
+    private val NET_LISTS = arrayOf(
+        "easylist_net.txt.gz",        // EasyList ad servers, third party, general
+        "easyprivacy_net.txt.gz",     // EasyPrivacy trackers
+        "hosts_extra.txt.gz"          // StevenBlack hosts - adware, malware, trackers
+    )
+
     private fun loadNetwork(context: Context) {
+        for (asset in NET_LISTS) loadNetworkFile(context, asset)
+    }
+
+    private fun loadNetworkFile(context: Context, asset: String) {
         try {
-            openAsset(context, "easylist_net.txt.gz")?.bufferedReader()?.use { r ->
+            openAsset(context, asset)?.bufferedReader()?.use { r ->
                 r.forEachLine { raw ->
                     val line = raw.trim()
                     if (line.isEmpty()) return@forEachLine
