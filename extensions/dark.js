@@ -1,0 +1,1 @@
+try{var s=document.createElement('style');s.id='nijatva-dark';s.textContent='html{filter:invert(1) hue-rotate(180deg);background:#101010!important}img,video,picture,canvas,svg{filter:invert(1) hue-rotate(180deg)!important}';document.documentElement.appendChild(s);}catch(e){}

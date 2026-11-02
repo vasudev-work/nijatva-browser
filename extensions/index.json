@@ -91,6 +91,136 @@
       "version": "1.0",
       "category": "Take control of tabs",
       "sha256": "808cbac9ff5cc35eebed4e75907f1f7511fb66c9e71f7227e532ceec624009d7"
+    },
+    {
+      "id": "builtin-dark",
+      "name": "Dark mode (invert)",
+      "desc": "Invert every page for comfortable night reading",
+      "pattern": "*",
+      "file": "dark.js",
+      "version": "1.0",
+      "category": "Accessibility",
+      "sha256": "98046930f79358030ecae0539fb76c10d6cf2590c57164df766d416fe79d0980"
+    },
+    {
+      "id": "builtin-font",
+      "name": "Bigger text",
+      "desc": "Bump the default body text to 18px",
+      "pattern": "*",
+      "file": "font.js",
+      "version": "1.0",
+      "category": "Accessibility",
+      "sha256": "7ca401d8feac17edb61abf79b39525dd25c45bf0ed4f8dabdef4c526019507a6"
+    },
+    {
+      "id": "builtin-cookie",
+      "name": "Cookie banner remover",
+      "desc": "Click the Accept button on common cookie banners",
+      "pattern": "*",
+      "file": "cookie.js",
+      "version": "1.0",
+      "category": "Privacy",
+      "sha256": "ef613fc0baeee2c06f97cf91c50b0fde27636733d3e5fc1a267fb0f9348c695a"
+    },
+    {
+      "id": "builtin-json",
+      "name": "JSON viewer",
+      "desc": "Pretty-print raw JSON responses",
+      "pattern": "*",
+      "file": "json.js",
+      "version": "1.0",
+      "category": "Developer Tools",
+      "sha256": "174911cefa744716cdb0dac88d57eb4d1213df58ed8fea5f012d9c2a5cac1951"
+    },
+    {
+      "id": "builtin-ryd",
+      "name": "Return YouTube Dislike",
+      "desc": "Show the dislike count again on YouTube",
+      "pattern": "*youtube.com*",
+      "file": "ryd.js",
+      "version": "1.0",
+      "category": "Productivity",
+      "sha256": "6e0711abdb5bf05213f1a1ba33950f93e2a31c1c020e5c66cab68d6c86d9f718"
+    },
+    {
+      "id": "builtin-media",
+      "name": "Media sniffer",
+      "desc": "Detect video and audio files on the page",
+      "pattern": "*",
+      "file": "media.js",
+      "version": "1.0",
+      "category": "Productivity",
+      "sha256": "5e0f86d84eadc6892c489aac698f35cebb34f10734fc70d4c929f3e040d7a32a"
+    },
+    {
+      "id": "builtin-bgplay",
+      "name": "Background playback (YouTube)",
+      "desc": "Keep YouTube playing when you leave the tab",
+      "pattern": "*youtube.com*,*youtu.be*",
+      "file": "bgplay.js",
+      "version": "1.0",
+      "category": "Productivity",
+      "sha256": "07fc666954b44df7b8d74876c5fae34f9d2e3becc99c12bb02276ebab91cc9dd"
+    },
+    {
+      "id": "builtin-target",
+      "name": "Open links in same tab",
+      "desc": "Rewrite target=\"_blank\" links to open in the same tab",
+      "pattern": "*",
+      "file": "target.js",
+      "version": "1.0",
+      "category": "Take control of tabs",
+      "sha256": "c708ba6761700ccf73d6a8979aa3f9a66f3008a32f7203c08994e8386749fc8a"
+    },
+    {
+      "id": "cat-ytad",
+      "name": "Skip YouTube ads",
+      "desc": "Click the Skip button as soon as it appears",
+      "pattern": "*youtube.com*",
+      "file": "cat-ytad.js",
+      "version": "1.0",
+      "category": "Productivity",
+      "sha256": "83de4934a2f02b887d50b81f9be440b80b8d382545f5537f10b6ffc4457cf4a9"
+    },
+    {
+      "id": "cat-sticky",
+      "name": "Unstick sticky headers",
+      "desc": "Stop headers following you down the page",
+      "pattern": "*",
+      "file": "cat-sticky.js",
+      "version": "1.0",
+      "category": "Productivity",
+      "sha256": "64ab0e11b67471a653b9910939d29a176ef9e22975b8975bd33731ec337bab13"
+    },
+    {
+      "id": "cat-wiki",
+      "name": "Clean Wikipedia",
+      "desc": "Hide the sidebars on Wikipedia articles",
+      "pattern": "*wikipedia.org*",
+      "file": "cat-wiki.js",
+      "version": "1.0",
+      "category": "Productivity",
+      "sha256": "1ca2590387a102b90f44202a8cd741bdcb5bb8d49ddc403e19f2ba3a9d895c4c"
+    },
+    {
+      "id": "cat-read",
+      "name": "Bigger article text",
+      "desc": "Make article paragraphs larger and airier",
+      "pattern": "*",
+      "file": "cat-read.js",
+      "version": "1.0",
+      "category": "Accessibility",
+      "sha256": "8017ce8da594041f59df9c639baff5e236406ce458cb9c9cb1c9e288adb171bb"
+    },
+    {
+      "id": "cat-gray",
+      "name": "Grayscale images",
+      "desc": "Render every image in black and white",
+      "pattern": "*",
+      "file": "cat-gray.js",
+      "version": "1.0",
+      "category": "Accessibility",
+      "sha256": "b0c3371bde3a4419ab6331bfc36bdc5f93fc2731e7713495655dd19d755d1e0e"
     }
   ]
 }
