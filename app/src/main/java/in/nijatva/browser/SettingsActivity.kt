@@ -55,6 +55,11 @@ class SettingsActivity : BaseSettingsActivity() {
         ),
         getString(R.string.sec_privacy) to listOf(
             row(R.string.ab_title) { go(AdBlockActivity::class.java) },
+            Item(getString(R.string.sh_clean_urls)) {
+                val on = prefs.getBoolean("clean_urls", false)
+                prefs.edit().putBoolean("clean_urls", !on).apply()
+                rebuild()
+            },
             row(R.string.r_privacy_dashboard) { go(PrivacyActivity::class.java) },
             row(R.string.s_permissions) { go(SitePermissionsActivity::class.java) }
         ),
@@ -145,15 +150,18 @@ class SettingsActivity : BaseSettingsActivity() {
             Item(getString(R.string.s_feedback), { feedback() }),
             Item(getString(R.string.s_licences), dialog(R.string.s_licences, getString(R.string.licences_note))),
             Item(getString(R.string.s_privacy_policy), dialog(R.string.s_privacy_policy, getString(R.string.policy_note))),
-            Item(getString(R.string.s_webview_version), dialog(R.string.s_webview_version, webViewVersion()))
+            Item(getString(R.string.s_webview_version), dialog(R.string.s_webview_version, webViewVersion())),
+            // the version is a row in this group, not a section of its own
+            Item(getString(R.string.s_app_version), { showDialog(getString(R.string.s_app_version), appVersion()) })
         ).sortedBy { it.label.lowercase() }
     )
 
     override fun build(b: SettingsBuilder, content: LinearLayout) {
         addSearchBox()
 
-        // The switches people flip most often, before the categories: one tap
-        // here instead of a screen and a half for the same thing.
+        // A shortcut layer, not four new settings: each switch here is the same
+        // pref as its canonical row further down, so the two stay in step.
+        b.section(getString(R.string.quick_settings))
         val quick = b.card()
         b.iconSwitchRow(quick, R.drawable.ic_brightness, getString(R.string.m_night), null,
             prefs.getBoolean("force_dark", false)) { _, on ->
@@ -175,11 +183,6 @@ class SettingsActivity : BaseSettingsActivity() {
             prefs.getBoolean("https_only", false)) { _, on ->
             prefs.edit().putBoolean("https_only", on).apply()
         }
-        b.divider(quick)
-        b.iconSwitchRow(quick, R.drawable.ic_filter, getString(R.string.sh_clean_urls), null,
-            prefs.getBoolean("clean_urls", false)) { _, on ->
-            prefs.edit().putBoolean("clean_urls", on).apply()
-        }
 
         // A search always looks at everything, on either screen.
         if (query.isNotBlank()) {
@@ -194,7 +197,7 @@ class SettingsActivity : BaseSettingsActivity() {
                     b.navRow(card, item.label, null, android.view.View.OnClickListener { item.action() })
                 }
             }
-            if (first) b.note(getString(R.string.d_empty))
+            if (first) b.note(getString(R.string.no_settings_found))
             return
         }
 
@@ -246,9 +249,6 @@ class SettingsActivity : BaseSettingsActivity() {
                     android.view.View.OnClickListener { item.action() })
             }
         }
-        b.section(getString(R.string.sec_about))
-        val av = b.card()
-        b.valueRow(av, getString(R.string.s_app_version), appVersion(), null)
     }
 
     private fun addSearchBox() {
