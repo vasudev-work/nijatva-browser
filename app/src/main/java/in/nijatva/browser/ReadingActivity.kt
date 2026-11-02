@@ -77,8 +77,8 @@ class ReadingActivity : BaseSettingsActivity() {
             prefs.edit().putBoolean("eink", on).apply()
         }
         b.divider(v)
-        b.navRow(card, getString(R.string.sleep_title) + ": " + sleepName(), null) { pickSleep() }
-        b.divider(card)
+        b.navRow(v, getString(R.string.sleep_title) + ": " + sleepName(), null) { pickSleep() }
+        b.divider(v)
         b.switchRow(v, getString(R.string.rd_autoscroll), getString(R.string.rd_autoscroll_sum),
             prefs.getBoolean("autoscroll", false)) { _, on ->
             prefs.edit().putBoolean("autoscroll", on).apply()
