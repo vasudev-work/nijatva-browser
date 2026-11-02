@@ -36,7 +36,8 @@ class DownloadsActivity : BaseSettingsActivity() {
         val host: String,
         val mime: String,
         val local: String?,
-        val day: String
+        val day: String,
+        val ts: Long
     )
 
     override fun build(b: SettingsBuilder, content: LinearLayout) {
@@ -258,8 +259,7 @@ class DownloadsActivity : BaseSettingsActivity() {
         val out = ArrayList<Item>()
         try {
             val dm = getSystemService(android.content.Context.DOWNLOAD_SERVICE) as DownloadManager
-            val c = dm.query(DownloadManager.Query().setSortBy(
-                DownloadManager.Query.ORDER_DESCENDING))
+            val c = dm.query(DownloadManager.Query())
             if (c == null) return out
             val fmt = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
             c.use {
@@ -273,12 +273,13 @@ class DownloadsActivity : BaseSettingsActivity() {
                     val local = it.getString(it.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_URI))
                     val host = try { Uri.parse(uri).host ?: "" } catch (_: Exception) { "" }
                     val name = title ?: uri.substringAfterLast('/')
+                    val ts = if (when0 > 0) when0 else System.currentTimeMillis()
                     out.add(Item(id, name, if (size > 0) size else 0, host, mime, local,
-                        fmt.format(Date(if (when0 > 0) when0 else System.currentTimeMillis()))))
+                        fmt.format(Date(ts)), ts))
                 }
             }
         } catch (_: Exception) { }
-        return out
+        return out.sortedByDescending { it.ts }
     }
 
     private fun used(): String {
