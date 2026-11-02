@@ -12,3 +12,8 @@ captures/
 *.jks
 *.keystore
 keystore.properties
+
+# The store signing key must never be committed. The public key in
+# extensions/store-pubkey.pem is meant to be here - this only blocks the private one.
+*-signing-key.pem
+*private*.pem
