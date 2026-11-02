@@ -10,7 +10,11 @@ class BookmarksActivity : BaseSettingsActivity() {
         val entries = (prefs.getString("bookmarks", "") ?: "").split("\n").filter { it.contains('\u0001') }
         b.section(getString(R.string.s_bookmarks))
         if (entries.isEmpty()) {
-            b.note(getString(R.string.d_empty))
+            b.emptyState(b.card(), R.drawable.ic_bookmark,
+                getString(R.string.emp_bm_title), getString(R.string.emp_bm_sub),
+                getString(R.string.emp_import),
+                { startActivity(android.content.Intent(this, BackupActivity::class.java)) },
+                getString(R.string.emp_browse), { finish() })
         } else {
             for (e in entries) {
                 val i = e.indexOf('\u0001')

@@ -35,7 +35,11 @@ class HistoryActivity : BaseSettingsActivity() {
         else all.filter { it.first.contains(query, true) || it.second.contains(query, true) }
 
         if (filtered.isEmpty()) {
-            b.note(getString(R.string.d_empty))
+            // searching with no hits is not the same as having no history
+            if (query.isNotBlank()) b.note(getString(R.string.st_search_results))
+            else b.emptyState(b.card(), R.drawable.ic_history,
+                getString(R.string.emp_hist_title), getString(R.string.emp_hist_sub),
+                getString(R.string.emp_browse), { finish() })
         } else {
             var lastDay = ""
             var card: LinearLayout? = null

@@ -821,4 +821,10 @@
     <string name="don_pay_sub">Opens your payment app with the amount and payee filled in</string>
     <string name="don_no_app">No UPI payment app found on this device</string>
     <string name="don_thanks">Thank you for your support!</string>
+    <string name="emp_bm_title">No bookmarks yet</string>
+    <string name="emp_bm_sub">Save a page from the menu and it will appear here.</string>
+    <string name="emp_import">Import from a backup</string>
+    <string name="emp_browse">Start browsing</string>
+    <string name="emp_hist_title">No history yet</string>
+    <string name="emp_hist_sub">Pages you visit will be listed here, grouped by day.</string>
 </resources>
