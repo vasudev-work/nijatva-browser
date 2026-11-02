@@ -64,6 +64,8 @@ class SettingsActivity : BaseSettingsActivity() {
         ),
         getString(R.string.sec_about) to listOf(
             row(R.string.r_about) { go(AboutActivity::class.java) }
+            row(R.string.dev_title) { go(DeveloperActivity::class.java) }
+            row(R.string.don_title) { go(DonateActivity::class.java) }
         )
     )
 
