@@ -77,6 +77,8 @@ class ReadingActivity : BaseSettingsActivity() {
             prefs.edit().putBoolean("eink", on).apply()
         }
         b.divider(v)
+        b.navRow(card, getString(R.string.sleep_title) + ": " + sleepName(), null) { pickSleep() }
+        b.divider(card)
         b.switchRow(v, getString(R.string.rd_autoscroll), getString(R.string.rd_autoscroll_sum),
             prefs.getBoolean("autoscroll", false)) { _, on ->
             prefs.edit().putBoolean("autoscroll", on).apply()
@@ -182,5 +184,25 @@ class ReadingActivity : BaseSettingsActivity() {
             java.util.Locale.forLanguageTag(tag).getDisplayName(java.util.Locale.ENGLISH)
         } catch (_: Exception) { tag }
         return name.ifBlank { tag }
+    }
+
+    /** Off, 15, 30 or 60 minutes - read aloud should not run all night. */
+    private fun sleepName(): String {
+        val m = prefs.getInt("sleep_min", 0)
+        return if (m <= 0) getString(R.string.sleep_off) else "$m min"
+    }
+
+    private fun pickSleep() {
+        val mins = intArrayOf(0, 15, 30, 60)
+        val names = arrayOf(getString(R.string.sleep_off), "15 min", "30 min", "60 min")
+        val current = mins.indexOf(prefs.getInt("sleep_min", 0)).coerceAtLeast(0)
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(getString(R.string.sleep_title))
+            .setSingleChoiceItems(names, current) { d, which ->
+                prefs.edit().putInt("sleep_min", mins[which]).apply()
+                d.dismiss()
+                rebuild()
+            }
+            .show()
     }
 }
