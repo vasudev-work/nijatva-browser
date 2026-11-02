@@ -2618,6 +2618,7 @@ document.open();document.write(h);document.close();
         lateinit var dlg: android.app.Dialog
         var filter = ""
         var section = "tabs"   // "tabs" | "private"
+        var refresh: (() -> Unit)? = null
 
         // ---- top bar: + | count | layout toggle | overflow ----
         val top = LinearLayout(this)
@@ -2716,7 +2717,7 @@ document.open();document.write(h);document.close();
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.rightMargin = dp(20)
             tv.layoutParams = lp
-            tv.setOnClickListener { section = key; paintHeads(); rebuild() }
+            tv.setOnClickListener { section = key; paintHeads(); refresh?.invoke() }
             heads.addView(tv)
         }
         paintHeads()
@@ -2855,6 +2856,8 @@ document.open();document.write(h);document.close();
                 })
             }
         }
+
+        refresh = { rebuild() }
 
         toggle.setOnClickListener {
             gridMode = !gridMode
