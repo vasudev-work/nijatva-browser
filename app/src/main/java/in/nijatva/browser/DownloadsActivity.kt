@@ -118,7 +118,7 @@ class DownloadsActivity : BaseSettingsActivity() {
         else -> true
     }
 
-    private fun row(card: LinearLayout, it: Item) {
+    private fun row(card: LinearLayout, item: Item) {
         val r = LinearLayout(this)
         r.orientation = LinearLayout.HORIZONTAL
         r.gravity = Gravity.CENTER_VERTICAL
@@ -137,12 +137,12 @@ class DownloadsActivity : BaseSettingsActivity() {
         thumb.scaleType = ImageView.ScaleType.CENTER_CROP
         val lp = LinearLayout.LayoutParams(dp(48), dp(48))
         lp.rightMargin = dp(12)
-        val bmp = if (it.mime.startsWith("image/")) preview(it.local) else null
+        val bmp = if (item.mime.startsWith("image/")) preview(item.local) else null
         if (bmp != null) {
             thumb.setImageBitmap(bmp)
             thumb.clipToOutline = false
         } else {
-            thumb.setImageResource(iconFor(it.mime))
+            thumb.setImageResource(iconFor(item.mime))
             thumb.setColorFilter(attr(R.attr.textSecondaryColor))
             thumb.scaleType = ImageView.ScaleType.CENTER_INSIDE
             thumb.setPadding(dp(11), dp(11), dp(11), dp(11))
@@ -153,14 +153,14 @@ class DownloadsActivity : BaseSettingsActivity() {
         col.orientation = LinearLayout.VERTICAL
         col.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         val name = TextView(this)
-        name.text = it.name
+        name.text = item.name
         name.setTextColor(attr(R.attr.textPrimaryColor))
         name.textSize = 15f
         name.maxLines = 1
         name.ellipsize = android.text.TextUtils.TruncateAt.MIDDLE
         col.addView(name)
         val sub = TextView(this)
-        sub.text = if (it.host.isBlank()) size(it.size) else size(it.size) + " \u00b7 " + it.host
+        sub.text = if (item.host.isBlank()) size(item.size) else size(item.size) + " \u00b7 " + item.host
         sub.setTextColor(attr(R.attr.textSecondaryColor))
         sub.textSize = 12f
         sub.maxLines = 1
@@ -174,10 +174,10 @@ class DownloadsActivity : BaseSettingsActivity() {
         more.setTextColor(attr(R.attr.textSecondaryColor))
         more.setPadding(dp(12), 0, dp(12), 0)
         more.isFocusable = false
-        more.setOnClickListener { menu(more, it) }
+        more.setOnClickListener { menu(more, item) }
         r.addView(more)
 
-        r.setOnClickListener { open(it) }
+        r.setOnClickListener { open(item) }
         card.addView(r)
         b_divider(card)
     }
@@ -258,7 +258,7 @@ class DownloadsActivity : BaseSettingsActivity() {
         val out = ArrayList<Item>()
         try {
             val dm = getSystemService(android.content.Context.DOWNLOAD_SERVICE) as DownloadManager
-            val c = dm.query(DownloadManager.Query().setSortingOrder(
+            val c = dm.query(DownloadManager.Query().setSortBy(
                 DownloadManager.Query.ORDER_DESCENDING))
             if (c == null) return out
             val fmt = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
@@ -269,7 +269,7 @@ class DownloadsActivity : BaseSettingsActivity() {
                     val uri = it.getString(it.getColumnIndexOrThrow(DownloadManager.COLUMN_URI)) ?: ""
                     val mime = it.getString(it.getColumnIndexOrThrow(DownloadManager.COLUMN_MEDIA_TYPE)) ?: ""
                     val size = it.getLong(it.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
-                    val when0 = it.getLong(it.getColumnIndexOrThrow(DownloadManager.COLUMN_LAST_MODIFIED))
+                    val when0 = it.getLong(it.getColumnIndexOrThrow(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP))
                     val local = it.getString(it.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_URI))
                     val host = try { Uri.parse(uri).host ?: "" } catch (_: Exception) { "" }
                     val name = title ?: uri.substringAfterLast('/')
