@@ -174,6 +174,9 @@
 <script>
 (function () {
   var BASE = 'https://raw.githubusercontent.com/vasudev-work/nijatva-browser/main/extensions/';
+  // scripts are big and never change for a version, so the CDN serves them;
+  // the index must be fresh, so it comes from raw
+  var CDN  = 'https://cdn.jsdelivr.net/gh/vasudev-work/nijatva-browser@main/extensions/';
   try {
     var fromApp = new URLSearchParams(location.search).get('base');
     if (fromApp) BASE = fromApp.charAt(fromApp.length - 1) === '/' ? fromApp : fromApp + '/';
@@ -236,7 +239,7 @@
     var isOn = installed[e.id] ? true : false;
     var link = e.fromApp
       ? 'nijatva://install?b=' + encodeURIComponent(e.id)
-      : 'nijatva://install?u=' + encodeURIComponent(BASE + (e.file || '')) +
+      : 'nijatva://install?u=' + encodeURIComponent(CDN + (e.file || '')) +
         '&n=' + encodeURIComponent(nm) + '&p=' + encodeURIComponent(e.pattern || '*') +
         '&i=' + encodeURIComponent(e.id || '') +
         '&h=' + encodeURIComponent(e.sha256 || '');
@@ -362,7 +365,7 @@
   function openSheet(e) {
     var nm = e.name || 'Extension';
     var isOn = installed[e.id] ? true : false;
-    var src = e.fromApp ? '' : BASE + (e.file || '');
+    var src = e.fromApp ? '' : CDN + (e.file || '');
     var link = e.fromApp
       ? 'nijatva://install?b=' + encodeURIComponent(e.id)
       : 'nijatva://install?u=' + encodeURIComponent(src) +
