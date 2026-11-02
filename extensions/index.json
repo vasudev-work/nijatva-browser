@@ -1,4 +1,5 @@
 {
+  "schema": 2,
   "version": 1,
   "extensions": [
     {
@@ -8,7 +9,8 @@
       "pattern": "*",
       "file": "cosmetic-cleanup.js",
       "version": "1.0",
-      "category": "Privacy"
+      "category": "Privacy",
+      "sha256": "c8ca51c59d2075a67eb69d429010a9c3b6424af593fbeda74d79b7be370376d6"
     },
     {
       "id": "hide-shorts",
@@ -17,7 +19,8 @@
       "pattern": "*youtube.com*",
       "file": "hide-shorts.js",
       "version": "1.1",
-      "category": "Productivity"
+      "category": "Productivity",
+      "sha256": "8be25d594331c0c04cdc374e66e501ffdbff52b14565e5c8d0a6d36c68a720e7"
     },
     {
       "id": "stop-autoplay",
@@ -26,7 +29,8 @@
       "pattern": "*",
       "file": "stop-autoplay.js",
       "version": "1.0",
-      "category": "Productivity"
+      "category": "Productivity",
+      "sha256": "39ff814bd465ad390cd4872dd8c8f22918748a6b2f23d1907b08c364cd34e218"
     },
     {
       "id": "wide-github",
@@ -35,7 +39,8 @@
       "pattern": "*github.com*",
       "file": "wide-github.js",
       "version": "1.0",
-      "category": "Developer Tools"
+      "category": "Developer Tools",
+      "sha256": "c18c83a70fca531a8919ff6a3e2e9714b1a5c18db71579fbea66a5a613b86401"
     },
     {
       "id": "reader-width",
@@ -44,7 +49,8 @@
       "pattern": "*",
       "file": "reader-width.js",
       "version": "1.0",
-      "category": "Productivity"
+      "category": "Productivity",
+      "sha256": "d048036ac8483f0f9870362f5a63ec8c95a900d4bc2e76e164e0735b82da3531"
     },
     {
       "id": "hide-consent",
@@ -53,7 +59,8 @@
       "pattern": "*",
       "file": "hide-consent.js",
       "version": "1.0",
-      "category": "Privacy"
+      "category": "Privacy",
+      "sha256": "590638c36aa85488a2f4ce1f6bc79e366a0e57247435120120d4e8b0881f34fa"
     },
     {
       "id": "no-miniplayer",
@@ -62,7 +69,8 @@
       "pattern": "*youtube.com*",
       "file": "no-miniplayer.js",
       "version": "1.0",
-      "category": "Take control of tabs"
+      "category": "Take control of tabs",
+      "sha256": "8340bbdc43cb691dba6cc4dcf5a6e3d000e57c4d56159df35341a7e5f9a25747"
     },
     {
       "id": "dark-scrollbars",
@@ -71,7 +79,8 @@
       "pattern": "*",
       "file": "dark-scrollbars.js",
       "version": "1.0",
-      "category": "Accessibility"
+      "category": "Accessibility",
+      "sha256": "354f1267d465a812067c1fbd62c8a8d66369eaa50915076160fdcecfd6573730"
     },
     {
       "id": "block-youtube-redirect",
@@ -80,7 +89,8 @@
       "pattern": "*",
       "file": "block-youtube-redirect.js",
       "version": "1.0",
-      "category": "Take control of tabs"
+      "category": "Take control of tabs",
+      "sha256": "808cbac9ff5cc35eebed4e75907f1f7511fb66c9e71f7227e532ceec624009d7"
     }
   ]
 }
