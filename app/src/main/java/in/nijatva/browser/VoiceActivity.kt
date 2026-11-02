@@ -69,6 +69,43 @@ class VoiceActivity : BaseSettingsActivity() {
         prefs.edit().remove("tts_voice_lang").remove("tts_voice_name").apply()
     }
 
+    /**
+     * Android does not report a voice's gender. Some engines put it in the name
+     * ("Samsung male", "female"), and that is the only signal there is - so we
+     * use it when present and say so plainly when it is not.
+     */
+    private fun genderOf(v: Voice): String {
+        val n = (v.name ?: "").lowercase()
+        return when {
+            n.contains("female") || n.contains("woman") -> "female"
+            n.contains("male") || n.contains("man") -> "male"
+            else -> ""
+        }
+    }
+
+    private fun genderPref(): String = prefs.getString("tts_gender", "any") ?: "any"
+
+    private fun genderName(): String = when (genderPref()) {
+        "male" -> getString(R.string.tts_gender_male)
+        "female" -> getString(R.string.tts_gender_female)
+        else -> getString(R.string.tts_gender_any)
+    }
+
+    private fun pickGender() {
+        val keys = arrayOf("any", "male", "female")
+        val names = arrayOf(getString(R.string.tts_gender_any),
+            getString(R.string.tts_gender_male), getString(R.string.tts_gender_female))
+        val cur = keys.indexOf(genderPref()).coerceAtLeast(0)
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.tts_gender))
+            .setSingleChoiceItems(names, cur) { d, which ->
+                prefs.edit().putString("tts_gender", keys[which]).apply()
+                d.dismiss()
+                rebuild()
+            }
+            .show()
+    }
+
     override fun build(b: SettingsBuilder, content: LinearLayout) {
         startEngine()
 
@@ -102,11 +139,18 @@ class VoiceActivity : BaseSettingsActivity() {
         val card = b.card()
         for ((i, entry) in langs.withIndex()) {
             if (i > 0) b.divider(card)
-            val (tag, voices) = entry
+            var (tag, voices) = entry
+            val want = genderPref()
+            if (want != "any") {
+                val matching = voices.filter { genderOf(it) == want }
+                if (matching.isNotEmpty()) voices = matching
+            }
             val on = tag == currentTag()
             val summary = when {
                 on && currentName().isNotBlank() -> currentName()
                 voices.size > 1 -> getString(R.string.tts_voice_count, voices.size)
+                genderPref() != "any" && voices.none { genderOf(it) == genderPref() } ->
+                    getString(R.string.tts_gender_none)
                 else -> voices.firstOrNull()?.name ?: ""
             }
             b.navRow(card, displayName(tag), summary, View.OnClickListener {
@@ -123,7 +167,8 @@ class VoiceActivity : BaseSettingsActivity() {
 
     /** Only shown when a language genuinely has more than one voice. */
     private fun pickVoice(tag: String, voices: List<Voice>) {
-        val sorted = voices.sortedBy { it.name ?: "" }
+        val sorted = voices.sortedWith(
+            compareBy({ if (genderOf(it) == genderPref()) 0 else 1 }, { it.name ?: "" }))
         val names = sorted.map { v ->
             val q = if (v.quality > 300) " · high quality" else ""
             val n = if (v.isNetworkConnectionRequired) " · needs network" else ""
