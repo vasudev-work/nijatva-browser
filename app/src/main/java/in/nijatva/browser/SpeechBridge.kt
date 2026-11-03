@@ -26,6 +26,10 @@ import java.util.Locale
 class SpeechBridge(webView: WebView) {
 
     private val view = WeakReference(webView)
+
+    init {
+        try { TtsReader.onBoundary = { s, e -> boundary(s, e) } } catch (_: Exception) { }
+    }
     private var tts: TextToSpeech? = null
     private var started = false
     private var failed = false
@@ -59,6 +63,19 @@ class SpeechBridge(webView: WebView) {
                 pending = null
             }
         } catch (_: Exception) { failed = true }
+    }
+
+    /** Called by TtsReader as it speaks: hand the offsets to the page. */
+    fun boundary(start: Int, end: Int) {
+        try {
+            view.get()?.post {
+                try {
+                    view.get()?.evaluateJavascript(
+                        "window.__nijatvaSpeechBoundary&&window.__nijatvaSpeechBoundary($start,$end)",
+                        null)
+                } catch (_: Exception) { }
+            }
+        } catch (_: Exception) { }
     }
 
     private fun finish(ok: Boolean) {
@@ -231,6 +248,21 @@ class SpeechBridge(webView: WebView) {
       resume: function(){ try{ B.resume() }catch(e){} S.paused = false; },
       getVoices: function(){ return list.length ? list : fallback; },
       addEventListener: function(){}, removeEventListener: function(){}
+    };
+    /* a reader highlights the word it is speaking from these */
+    window.__nijatvaSpeechBoundary = function(start, end){
+      try{
+        if (cur && cur.onboundary) cur.onboundary({
+          charIndex: start, charLength: Math.max(0, end - start), name: 'word'
+        });
+      }catch(e){}
+    };
+    window.__nijatvaSpeechPaused = function(p){
+      try{
+        S.paused = !!p;
+        if (cur && p && cur.onpause) cur.onpause({});
+        if (cur && !p && cur.onresume) cur.onresume({});
+      }catch(e){}
     };
     window.__nijatvaSpeechDone = function(ok){
       S.speaking = false;
