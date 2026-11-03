@@ -158,14 +158,21 @@ class HistoryActivity : BaseSettingsActivity() {
         clp.leftMargin = dp(13)
         row.addView(col, clp)
 
+        // a filled circle with an x, the way the reference draws it - a bare glyph
+        // is hard to hit and easy to miss
         val x = android.widget.TextView(this)
         x.text = "\u2715"
-        x.textSize = 15f
+        x.textSize = 12f
         x.gravity = android.view.Gravity.CENTER
         x.setTextColor(attr(R.attr.textSecondaryColor))
-        x.setPadding(dp(10), dp(10), dp(10), dp(10))
+        val xbg = GradientDrawable()
+        xbg.shape = GradientDrawable.OVAL
+        xbg.setColor(attr(R.attr.surface2Color))
+        x.background = xbg
         x.setOnClickListener { onDelete() }
-        row.addView(x, LinearLayout.LayoutParams(dp(42), dp(42)))
+        val xlp = LinearLayout.LayoutParams(dp(28), dp(28))
+        xlp.leftMargin = dp(6)
+        row.addView(x, xlp)
 
         card.addView(row)
         b.divider(card)
@@ -199,11 +206,12 @@ class HistoryActivity : BaseSettingsActivity() {
         val now = Calendar.getInstance()
         val then = Calendar.getInstance().apply { timeInMillis = ts }
         val sameYear = now.get(Calendar.YEAR) == then.get(Calendar.YEAR)
+        val dm = SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(Date(ts))
         if (sameYear && now.get(Calendar.DAY_OF_YEAR) == then.get(Calendar.DAY_OF_YEAR))
-            return getString(R.string.hist_today)
+            return getString(R.string.hist_today) + " - " + dm
         val y = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }
         if (sameYear && y.get(Calendar.DAY_OF_YEAR) == then.get(Calendar.DAY_OF_YEAR))
-            return getString(R.string.hist_yesterday)
+            return getString(R.string.hist_yesterday) + " - " + dm
         return SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(Date(ts))
     }
 
