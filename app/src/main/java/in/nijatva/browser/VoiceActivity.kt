@@ -106,6 +106,37 @@ class VoiceActivity : BaseSettingsActivity() {
             .show()
     }
 
+    /**
+     * What tells two voices of the same language apart.
+     *
+     * Some engines put the speaker in the voice's features ("female"), which is
+     * the only real gender signal Android gives. Where they do not, the variant
+     * code from the engine id is shown instead - "hia", "ene" - so two Hindi
+     * voices are at least distinguishable, plus whether it needs a network.
+     */
+    private fun voiceDetail(v: Voice): String {
+        val feats = try { v.features?.map { it.lowercase(Locale.ENGLISH) } ?: emptyList() }
+                    catch (_: Exception) { emptyList<String>() }
+        // "female" contains "male" - the longer word has to be checked first
+        if (feats.any { it.contains("female") }) return "Female"
+        if (feats.any { it.contains("male") }) return "Male"
+
+        val parts = (v.name ?: "").split("-")
+        val variant = when {
+            parts.size >= 5 && parts[parts.size - 2].length in 1..4 -> parts[parts.size - 2]
+            parts.size >= 2 -> parts.last()
+            else -> ""
+        }
+        val mode = if (v.isNetworkConnectionRequired) "online" else "offline"
+        return if (variant.isBlank()) mode else "$variant ($mode)"
+    }
+
+    /** The label a person reads: language, then whatever sets this voice apart. */
+    private fun voiceLabel(v: Voice, tag: String): String {
+        val detail = voiceDetail(v)
+        return if (detail.isBlank()) displayName(tag) else displayName(tag) + " - " + detail
+    }
+
     override fun build(b: SettingsBuilder, content: LinearLayout) {
         startEngine()
 
@@ -147,7 +178,10 @@ class VoiceActivity : BaseSettingsActivity() {
             }
             val on = tag == currentTag()
             val summary = when {
-                on && currentName().isNotBlank() -> currentName()
+                on && currentName().isNotBlank() -> {
+                    val v = voices.firstOrNull { it.name == currentName() }
+                    if (v != null) voiceLabel(v, tag) else currentName()
+                }
                 voices.size > 1 -> getString(R.string.tts_voice_count, voices.size)
                 genderPref() != "any" && voices.none { genderOf(it) == genderPref() } ->
                     getString(R.string.tts_gender_none)
@@ -167,12 +201,15 @@ class VoiceActivity : BaseSettingsActivity() {
 
     /** Only shown when a language genuinely has more than one voice. */
     private fun pickVoice(tag: String, voices: List<Voice>) {
-        val sorted = voices.sortedWith(
-            compareBy({ if (genderOf(it) == genderPref()) 0 else 1 }, { it.name ?: "" }))
+        // male and female first, then by how they differ - never the raw engine id
+        val sorted = voices.sortedWith(compareBy(
+            { if (genderOf(it) == genderPref()) 0 else 1 },
+            { if (voiceDetail(it) == "Male" || voiceDetail(it) == "Female") 0 else 1 },
+            { voiceDetail(it) }))
         val names = sorted.map { v ->
-            val q = if (v.quality > 300) " · high quality" else ""
-            val n = if (v.isNetworkConnectionRequired) " · needs network" else ""
-            (v.name ?: "Voice") + q + n
+            val d = voiceDetail(v)
+            if (d == "Male" || d == "Female") d + " - " + (v.name ?: "")
+            else if (d.isBlank()) (v.name ?: "Voice") else d
         }.toTypedArray()
         AlertDialog.Builder(this)
             .setTitle(displayName(tag))
