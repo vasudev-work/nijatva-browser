@@ -1989,6 +1989,21 @@ document.open();document.write(h);document.close();
             }
             "appearance" -> startActivity(Intent(this, AppearanceActivity::class.java))
             "settings" -> startActivity(Intent(this, SettingsActivity::class.java))
+            "remove" -> {
+                // The card on the store page offers this once a script is installed,
+                // so the page can flip back to Add without a trip to Extensions.
+                val id = uri.getQueryParameter("id") ?: ""
+                try {
+                    val store = ExtensionStore(this)
+                    val found = store.getAll().firstOrNull { it.id == id || it.name.equals(id, true) }
+                    if (found == null) toast(getString(R.string.ext_not_installed))
+                    else {
+                        store.delete(found.id)
+                        toast(getString(R.string.ext_removed_toast, found.name))
+                    }
+                } catch (_: Exception) { }
+                markInstalled("")
+            }
             "install" -> {
                 // Installed from the store page: do it here, in place, so the page
                 // is never left. The card flips to Installed when it is done.

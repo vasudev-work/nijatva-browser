@@ -858,4 +858,5 @@
     <string name="ext_from_link_sum">Paste a userscript URL, for example from Greasy Fork</string>
     <string name="ext_bad_link">That does not look like a link</string>
     <string name="ext_added">Extension added</string>
+    <string name="ext_not_installed">That extension is not installed</string>
 </resources>
