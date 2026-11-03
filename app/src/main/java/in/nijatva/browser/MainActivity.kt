@@ -1848,6 +1848,29 @@ document.open();document.write(h);document.close();
         }
     }
 
+    /**
+     * Eruda, loaded only when asked for. A page inspector is a developer tool, not
+     * something every page should carry, so nothing is bundled and nothing runs
+     * until this row is tapped. It needs a network the first time.
+     */
+    private fun injectInspector() {
+        val w = cur() ?: return
+        val js = """
+(function(){
+  function up(){ try { if (window.eruda) { window.eruda.init(); window.eruda.show(); } } catch(e){} }
+  if (window.eruda) { up(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/eruda@3/eruda.min.js';
+  s.onload = up;
+  s.onerror = function(){
+    try { document.title = document.title; } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+""".trimIndent()
+        try { w.evaluateJavascript(js, null) } catch (_: Exception) { }
+    }
+
     private fun go(input: String?) {
         var u = input?.trim() ?: ""
         if (u.isEmpty()) return
@@ -2427,6 +2450,9 @@ document.open();document.write(h);document.close();
                 View.OnClickListener { menuPage = 0; buildMenu() })
             val pc = b.card()
             b.menuRow(pc, R.drawable.ic_find, getString(R.string.m_find), null, act(7))
+            b.menuRow(pc, R.drawable.ic_code, getString(R.string.m_inspect),
+                getString(R.string.m_inspect_sub),
+                View.OnClickListener { hideMenuPanel(); injectInspector() })
             b.menuRow(pc, R.drawable.ic_share, getString(R.string.m_share), null, act(8))
             b.menuRow(pc, R.drawable.ic_translate, getString(R.string.m_translate), null, act(9))
             b.iconValueRow(pc, R.drawable.ic_desktop, getString(R.string.m_desktop),

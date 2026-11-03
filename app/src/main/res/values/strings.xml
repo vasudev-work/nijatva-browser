@@ -859,4 +859,6 @@
     <string name="ext_bad_link">That does not look like a link</string>
     <string name="ext_added">Extension added</string>
     <string name="ext_not_installed">That extension is not installed</string>
+    <string name="m_inspect">Inspect page</string>
+    <string name="m_inspect_sub">Console and elements, loaded on demand</string>
 </resources>
