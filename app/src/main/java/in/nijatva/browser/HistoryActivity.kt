@@ -51,7 +51,7 @@ class HistoryActivity : BaseSettingsActivity() {
                     card = b.card()
                 }
                 val target = card ?: continue
-                entryRow(b, target, item.first, item.second) { delete(item.second, item.third) }
+                entryRow(b, target, item.first, item.second, item.third) { delete(item.second, item.third) }
             }
         }
 
@@ -105,7 +105,7 @@ class HistoryActivity : BaseSettingsActivity() {
      * it, and a cross that removes just this entry - the way the reference does
      * it, in one row rather than two.
      */
-    private fun entryRow(b: SettingsBuilder, card: LinearLayout, title: String, url: String, onDelete: () -> Unit) {
+    private fun entryRow(b: SettingsBuilder, card: LinearLayout, title: String, url: String, ts: Long, onDelete: () -> Unit) {
         val host = try { android.net.Uri.parse(url).host?.removePrefix("www.") ?: url } catch (_: Exception) { url }
         val label = if (title.isBlank()) host else title
 
@@ -160,6 +160,15 @@ class HistoryActivity : BaseSettingsActivity() {
 
         // a filled circle with an x, the way the reference draws it - a bare glyph
         // is hard to hit and easy to miss
+        // the time, then the x - the reference puts the hour on the right
+        val tm = android.widget.TextView(this)
+        tm.text = try { java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+                            .format(java.util.Date(ts)) } catch (_: Exception) { "" }
+        tm.setTextColor(attr(R.attr.textSecondaryColor))
+        tm.textSize = 12.5f
+        tm.setPadding(dp(6), 0, dp(6), 0)
+        row.addView(tm)
+
         val x = android.widget.TextView(this)
         x.text = "\u2715"
         x.textSize = 12f

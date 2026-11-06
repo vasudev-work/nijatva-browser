@@ -50,7 +50,40 @@ class DownloadsActivity : BaseSettingsActivity() {
         addTopView(head)
         val items = list().filter { keep(it) }
         if (items.isEmpty()) {
-            b.note(getString(R.string.dl_empty))
+            val box = LinearLayout(this)
+            box.orientation = LinearLayout.VERTICAL
+            box.gravity = Gravity.CENTER_HORIZONTAL
+            box.setPadding(dp(24), dp(40), dp(24), dp(16))
+
+            val mark = TextView(this)
+            mark.text = "\u2913"
+            mark.textSize = 44f
+            mark.gravity = Gravity.CENTER
+            mark.setTextColor(attr(R.attr.brandColor))
+            val mbg = GradientDrawable()
+            mbg.shape = GradientDrawable.OVAL
+            mbg.setColor((attr(R.attr.brandColor) and 0x00FFFFFF) or 0x1F000000)
+            mark.background = mbg
+            mark.layoutParams = LinearLayout.LayoutParams(dp(120), dp(120))
+            box.addView(mark)
+
+            val t1 = TextView(this)
+            t1.text = getString(R.string.dl_empty_title)
+            t1.textSize = 17f
+            t1.setTypeface(null, android.graphics.Typeface.BOLD)
+            t1.setTextColor(attr(R.attr.textPrimaryColor))
+            t1.gravity = Gravity.CENTER
+            t1.setPadding(0, dp(18), 0, dp(8))
+            box.addView(t1)
+
+            val t2 = TextView(this)
+            t2.text = getString(R.string.dl_empty_sub)
+            t2.textSize = 13.5f
+            t2.setTextColor(attr(R.attr.textSecondaryColor))
+            t2.gravity = Gravity.CENTER
+            box.addView(t2)
+
+            b.card().addView(box)
             return
         }
         var day = ""
