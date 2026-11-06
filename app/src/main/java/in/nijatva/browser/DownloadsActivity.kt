@@ -3,6 +3,7 @@ package `in`.nijatva.browser
 import android.app.DownloadManager
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Environment
 import android.os.StatFs
