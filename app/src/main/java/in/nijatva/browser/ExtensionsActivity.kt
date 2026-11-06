@@ -229,7 +229,7 @@ class ExtensionsActivity : BaseSettingsActivity() {
         row.addView(pill(getString(R.string.ext_details)) { detail(e) })
         row.addView(pill(getString(R.string.ext_remove)) { confirmRemove(e) })
 
-        val gap = View(this)
+        val gap = android.view.View(this)
         row.addView(gap, LinearLayout.LayoutParams(0, 1, 1f))
 
         val sw = androidx.appcompat.widget.SwitchCompat(this)
