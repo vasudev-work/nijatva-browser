@@ -76,11 +76,11 @@ class PrivacyActivity : BaseSettingsActivity() {
     private fun usageText(): String {
         var bytes = 0L
         try {
-            val cache = File(cacheDir, "WebView")
+            val cache = java.io.File(cacheDir, "WebView")
             if (cache.exists()) cache.walkTopDown().filter { it.isFile }.forEach { bytes += it.length() }
         } catch (_: Exception) { }
         try {
-            val app = File(applicationInfo.dataDir, "app_webview")
+            val app = java.io.File(applicationInfo.dataDir, "app_webview")
             if (app.exists()) app.walkTopDown().filter { it.isFile }.forEach { bytes += it.length() }
         } catch (_: Exception) { }
         val mb = bytes / (1024.0 * 1024.0)
