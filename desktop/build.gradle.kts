@@ -57,7 +57,7 @@ val packageApp by tasks.registering {
 
         fun run(vararg extra: String): Boolean {
             val cmd = mutableListOf(
-                jpackage, "--name", "Nijatva", "--app-version", "2.0.2",
+                jpackage, "--name", "Nijatva", "--app-version", "2.0.3",
                 "--input", jpackageInput.get().asFile.absolutePath,
                 "--main-jar", jarName, "--main-class", "MainKt",
                 "--dest", out.absolutePath
