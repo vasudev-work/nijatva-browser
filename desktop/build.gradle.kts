@@ -15,7 +15,10 @@ javafx {
 
 application { mainClass.set("MainKt") }
 
-dependencies { implementation(kotlin("stdlib")) }
+dependencies {
+    implementation(kotlin("stdlib"))
+    implementation("com.google.code.gson:gson:2.10.1")
+}
 
 // ---------------------------------------------------------------------------
 // Packaging.
