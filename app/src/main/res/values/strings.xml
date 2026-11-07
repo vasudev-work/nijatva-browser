@@ -933,4 +933,9 @@
     <string name="chk_require">Asks for @require - nothing is fetched for it</string>
     <string name="chk_early">Wants to run before the page loads - this runs after</string>
     <string name="chk_heavy">Large script with a MutationObserver - may be slow</string>
+    <string name="lock_here">Lock %1$s</string>
+    <string name="lock_on">Locked %1$s - blocking off here</string>
+    <string name="lock_off">Unlocked %1$s</string>
+    <string name="lock_no_site">No site open</string>
+    <string name="m_lock">Lock this site</string>
 </resources>
