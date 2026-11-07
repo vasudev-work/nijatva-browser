@@ -81,11 +81,13 @@ object Scripts {
         return null
     }
 
-    fun catalogue(): List<Entry> = try {
-        val body = get("index.json") ?: return emptyList()
-        val c = gson.fromJson(body, Catalogue::class.java)
-        c.extensions.sortedBy { it.name.lowercase() }
-    } catch (_: Exception) { emptyList() }
+    fun catalogue(): List<Entry> {
+        return try {
+            val body = get("index.json") ?: return emptyList()
+            val c = gson.fromJson(body, Catalogue::class.java)
+            c.extensions.sortedBy { it.name.lowercase() }
+        } catch (_: Exception) { emptyList() }
+    }
 
     fun install(entry: Entry): String? {
         val code = get(entry.file) ?: return "could not download ${entry.file}"

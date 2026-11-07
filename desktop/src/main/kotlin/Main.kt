@@ -121,7 +121,7 @@ class Browser : Application() {
             val col = VBox(2.0)
             val n = Label(name); n.style = "-fx-text-fill: #e8eaed; -fx-font-weight: bold;"
             val d = Label(sub); d.style = "-fx-text-fill: #9aa0a6; -fx-font-size: 11.5;"
-            d.wrapText = true
+            d.isWrapText = true
             col.children.addAll(n, d)
             HBox.setHgrow(col, Priority.ALWAYS)
             val btn = Button(action)
