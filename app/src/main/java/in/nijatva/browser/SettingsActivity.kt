@@ -116,6 +116,7 @@ class SettingsActivity : BaseSettingsActivity() {
             row(R.string.r_privacy_dashboard) { go(PrivacyActivity::class.java) },
             row(R.string.pf_title) { go(ProfilesActivity::class.java) },
             row(R.string.s_tracking) { go(ShieldsActivity::class.java) },
+            row(R.string.s_focus) { go(FocusActivity::class.java) },
             row(R.string.s_website_settings) { go(SitePermissionsActivity::class.java) }
         ).sortedBy { it.label.lowercase() },
 
