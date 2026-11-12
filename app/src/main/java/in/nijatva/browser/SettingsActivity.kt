@@ -240,17 +240,53 @@ class SettingsActivity : BaseSettingsActivity() {
 
         b.section(getString(R.string.st_all_settings))
         val already = tier1().flatMap { it.second }.map { it.label }.toSet()
-        for ((title, items) in everything()) {
+        for ((si, pair) in everything().withIndex()) {
+            val (title, items) = pair
             val kept = items.filter { it.label !in already }
             if (kept.isEmpty()) continue
             b.section(title)
             val card = b.card()
-            for (item in kept) {
-                b.navRow(card, item.label, subtitle(item.label),
+            for ((i, item) in kept.withIndex()) {
+                b.iconRowTinted(card, iconAt(si, i), tintAt(si), item.label, subtitle(item.label),
                     android.view.View.OnClickListener { item.action() })
             }
         }
     }
+
+    /**
+     * Colour and mark for each row, in the order the sections are declared: a long
+     * list is read by colour before it is read by word.
+     */
+    private val SECTION_TINT = intArrayOf(
+        0xFFFFA726.toInt(), 0xFF26A69A.toInt(), 0xFF42A5F5.toInt(), 0xFFFFCA28.toInt(),
+        0xFF66BB6A.toInt(), 0xFFFFCA28.toInt(), 0xFFEF5350.toInt()
+    )
+
+    private val SECTION_ICONS = listOf(
+        listOf(R.drawable.ic_palette, R.drawable.ic_home, R.drawable.ic_grid,
+               R.drawable.ic_find, R.drawable.ic_toolbar),
+        listOf(R.drawable.ic_tabs, R.drawable.ic_bookmark, R.drawable.ic_history,
+               R.drawable.ic_schedule, R.drawable.ic_book, R.drawable.ic_folder,
+               R.drawable.ic_download, R.drawable.ic_save, R.drawable.ic_speak),
+        listOf(R.drawable.ic_link, R.drawable.ic_shield, R.drawable.ic_block,
+               R.drawable.ic_shield, R.drawable.ic_lock, R.drawable.ic_verified,
+               R.drawable.ic_share, R.drawable.ic_key, R.drawable.ic_note,
+               R.drawable.ic_delete),
+        listOf(R.drawable.ic_cache, R.drawable.ic_memory),
+        listOf(R.drawable.ic_translate, R.drawable.ic_font, R.drawable.ic_eyeoff),
+        listOf(R.drawable.ic_save, R.drawable.ic_code, R.drawable.ic_data,
+               R.drawable.ic_list, R.drawable.ic_filter, R.drawable.ic_tune,
+               R.drawable.ic_extension, R.drawable.ic_palette),
+        listOf(R.drawable.ic_info, R.drawable.ic_note, R.drawable.ic_shield,
+               R.drawable.ic_send, R.drawable.ic_info, R.drawable.ic_update,
+               R.drawable.ic_info, R.drawable.ic_help, R.drawable.ic_star)
+    )
+
+    private fun iconAt(section: Int, index: Int): Int =
+        SECTION_ICONS.getOrNull(section)?.getOrNull(index) ?: R.drawable.ic_settings
+
+    private fun tintAt(section: Int): Int =
+        SECTION_TINT.getOrNull(section) ?: attr(R.attr.textSecondaryColor)
 
     private fun addSearchBox() {
         if (searchAdded) return
