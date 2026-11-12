@@ -317,20 +317,45 @@ class SettingsActivity : BaseSettingsActivity() {
      * The second line a row shows. The reference puts the current value there
      * rather than a description, so that is what this returns.
      */
+    /**
+     * The current state, under the name. A settings list that only says "Ad blocking" makes
+     * you open it to find out whether it is on - which is the one thing a list should save you.
+     */
     private fun subtitle(label: String): String? = try {
         when (label) {
-            getString(R.string.s_search_engine) ->
-                SearchEngineStore(this).default().name
-            getString(R.string.ab_title) ->
+            getString(R.string.s_search_engine) -> SearchEngineStore(this).default().name
+            getString(R.string.ab_title), getString(R.string.sh_ads) ->
                 if (prefs.getBoolean("block_ads", true)) "On" else "Off"
-            getString(R.string.m_night) ->
-                if (prefs.getBoolean("force_dark", false)) "On" else "Off"
-            getString(R.string.s_appearance) ->
-                when (prefs.getString("theme_mode", "dark")) {
+            getString(R.string.s_tracking), getString(R.string.sh_trackers) ->
+                if (prefs.getBoolean("block_trackers", true)) "On" else "Off"
+            getString(R.string.s_appearance), getString(R.string.ap_theme) ->
+                when (prefs.getString("site_appearance", "auto")) {
                     "light" -> "Light"
-                    "system" -> "System"
-                    else -> "Dark"
+                    "dark" -> "Dark"
+                    else -> "Automatic"
                 }
+            getString(R.string.s_focus) -> {
+                val n = (prefs.getString("block_sites", "") ?: "").split("\n").count { it.isNotBlank() }
+                when {
+                    n == 0 -> "No sites"
+                    prefs.getBoolean("block_always", false) -> "$n blocked, always"
+                    prefs.getBoolean("block_sched_on", false) ->
+                        String.format("%d blocked, %02d:00-%02d:00", n,
+                            prefs.getInt("block_from", 9), prefs.getInt("block_to", 18))
+                    else -> "$n blocked, off"
+                }
+            }
+            getString(R.string.r_extensions) -> {
+                val all = try { ExtensionStore(this).getAll() } catch (_: Exception) { emptyList() }
+                val on = all.count { it.enabled }
+                if (all.isEmpty()) "None installed" else "$on of ${all.size} on"
+            }
+            getString(R.string.s_passwords) -> {
+                val n = (prefs.getString("passwords", "") ?: "").split("\n").count { it.contains('\u0001') }
+                if (n == 0) "None saved" else "$n saved"
+            }
+            getString(R.string.sh_https), getString(R.string.adv_https) ->
+                if (prefs.getBoolean("https_only", true)) "On" else "Off"
             else -> null
         }
     } catch (_: Exception) { null }
