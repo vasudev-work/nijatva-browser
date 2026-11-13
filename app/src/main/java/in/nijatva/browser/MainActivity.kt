@@ -2768,7 +2768,6 @@ document.open();document.write(h);document.close();
             b.menuRow(pc, R.drawable.ic_tools, getString(R.string.m_tools), null, act(19))
             b.menuRow(pc, R.drawable.ic_ai, getString(R.string.ai_title), null, act(23))
             b.menuRow(pc, R.drawable.ic_help, getString(R.string.m_help), null, act(30))
-            b.menuRow(pc, R.drawable.ic_logo, getString(R.string.m_about), null, act(26))
             return
         }
 
@@ -2882,7 +2881,6 @@ document.open();document.write(h);document.close();
             23 -> { startActivity(Intent(this, AIActivity::class.java)); hideMenuPanel() }
             24 -> { startActivity(Intent(this, ExtensionsActivity::class.java)); hideMenuPanel() }
             25 -> { startActivity(Intent(this, SettingsActivity::class.java)); hideMenuPanel() }
-            26 -> { startActivity(Intent(this, AboutActivity::class.java)); hideMenuPanel() }
             27 -> finishAffinity()
             28 -> { go("https://github.com/nijatva/nijatva-browser/releases/latest"); hideMenuPanel() }
             29 -> { startActivity(Intent(this, PrivacyActivity::class.java)); hideMenuPanel() }
@@ -3466,7 +3464,6 @@ document.open();document.write(h);document.close();
         item(getString(R.string.tabs_select)) { toast(getString(R.string.tabs_select_note)) }
         item(getString(R.string.m_delete_data)) { startActivity(Intent(this, PrivacyActivity::class.java)) }
         item(getString(R.string.m_settings)) { startActivity(Intent(this, SettingsActivity::class.java)) }
-        item(getString(R.string.m_about)) { startActivity(Intent(this, AboutActivity::class.java)) }
 
         val d = android.app.Dialog(this)
         d.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)

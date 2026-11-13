@@ -68,7 +68,6 @@ class SettingsActivity : BaseSettingsActivity() {
             row(R.string.dls_title) { go(DownloadSettingsActivity::class.java) }
         ),
         getString(R.string.sec_about) to listOf(
-            row(R.string.r_about) { go(AboutActivity::class.java) },
             row(R.string.dev_title) { go(DeveloperActivity::class.java) },
             row(R.string.don_title) { go(DonateActivity::class.java) }
         )
@@ -146,7 +145,6 @@ class SettingsActivity : BaseSettingsActivity() {
         ).sortedBy { it.label.lowercase() },
 
         getString(R.string.sec_about) to listOf(
-            Item(getString(R.string.r_about), { go(AboutActivity::class.java) }),
             Item(getString(R.string.s_updates), dialog(R.string.s_updates, getString(R.string.updates_note))),
             Item(getString(R.string.s_feedback), { feedback() }),
             Item(getString(R.string.s_licences), dialog(R.string.s_licences, getString(R.string.licences_note))),
