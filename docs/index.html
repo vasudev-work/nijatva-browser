@@ -222,11 +222,22 @@
       It runs in your browser, so it has none of Nijatva's blocking - but the controls are the ones you will use.</p>
 
     <div style="border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#141414">
-      <div style="display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap">
-        <button class="ghost" style="padding:8px 14px;font-size:13px" onclick="demo('https://example.com')">example.com</button>
-        <button class="ghost" style="padding:8px 14px;font-size:13px" onclick="demo('https://en.m.wikipedia.org/wiki/Browser')">Wikipedia</button>
-        <button class="ghost" style="padding:8px 14px;font-size:13px" onclick="demo('https://lite.duckduckgo.com/lite/?q=privacy')">DuckDuckGo</button>
-        <span style="margin-left:auto;color:var(--dim2);font-size:12.5px">tap a site, or type below</span>
+      <div style="padding:10px 12px;border-bottom:1px solid var(--line)">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+          <input id="q" placeholder="Search the web, or type an address"
+                 onkeydown="if(event.key==='Enter')runSearch('google')"
+                 style="flex:1;min-width:180px;background:#0d0d0d;border:1px solid var(--line);color:var(--fg);
+                        border-radius:999px;padding:10px 16px;font-size:14px;outline:none">
+          <span style="color:var(--dim2);font-size:12.5px">search with</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="ghost" style="padding:8px 14px;font-size:13px" onclick="runSearch('google')">Google</button>
+          <button class="ghost" style="padding:8px 14px;font-size:13px" onclick="runSearch('qmuma')">Qmuma</button>
+          <button class="ghost" style="padding:8px 14px;font-size:13px" onclick="runSearch('ibharat')">iBharat</button>
+          <span style="width:1px;height:20px;background:var(--line);margin:0 4px"></span>
+          <button class="ghost" style="padding:8px 14px;font-size:13px" onclick="demo('https://example.com')">example.com</button>
+          <button class="ghost" style="padding:8px 14px;font-size:13px" onclick="demo('https://en.m.wikipedia.org/wiki/Browser')">Wikipedia</button>
+        </div>
       </div>
       <iframe id="demo" title="Nijatva demo window"
         src="https://vasudev-work.github.io/nijatva-web-store/embed.html?u=https%3A%2F%2Fexample.com"
@@ -338,6 +349,24 @@
 </footer>
 
 <script>
+  // the three engines the app ships with, in the order they are listed there
+  var ENGINES = {
+    google:  'https://www.google.com/search?q=',
+    qmuma:   'https://qmuma.com/search?q=',
+    ibharat: 'https://ibharat.org/search?q='
+  };
+
+  function runSearch(which){
+    var q = (document.getElementById('q').value || '').trim();
+    if (!q) { document.getElementById('q').focus(); return; }
+    // a bare address is opened, anything else is searched - the same rule the app uses
+    if (/^https?:\/\//i.test(q) || (/^[\w-]+(\.[\w-]+)+$/.test(q) && q.indexOf(' ') < 0)) {
+      demo(/^https?:/i.test(q) ? q : 'https://' + q);
+      return;
+    }
+    demo((ENGINES[which] || ENGINES.google) + encodeURIComponent(q));
+  }
+
   function demo(url){
     var f = document.getElementById('demo');
     if (!f) return;
