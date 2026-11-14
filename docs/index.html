@@ -133,6 +133,7 @@
     <div class="brand">Nijatva</div>
     <nav class="nav">
       <a href="#features">Features</a>
+      <a href="#try">Try it</a>
       <a href="#compare">Compare</a>
       <a href="#built">How it is built</a>
       <a href="https://vasudev-work.github.io/nijatva-web-store/">Extensions</a>
@@ -153,6 +154,7 @@
     </div>
     <ul>
       <li><a href="#features" onclick="closeSheet()">Features <span>&#8594;</span></a></li>
+      <li><a href="#try" onclick="closeSheet()">Try it <span>&#8594;</span></a></li>
       <li><a href="#compare" onclick="closeSheet()">Compare <span>&#8594;</span></a></li>
       <li><a href="#built" onclick="closeSheet()">How it is built <span>&#8594;</span></a></li>
       <li><a href="https://vasudev-work.github.io/nijatva-web-store/">Extensions <span>&#8594;</span></a></li>
@@ -210,6 +212,33 @@
       <div class="card"><div class="ic">&#128300;</div><h3>Inspect, on the phone</h3>
         <p>A page inspector loaded only when you ask for it. Nothing bundled, nothing running in the background.</p></div>
     </div>
+  </div>
+</section>
+
+<section id="try" style="background:#0c0c0c;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <h2>Try it, right here</h2>
+    <p class="sub">This is a working window, not a picture of one. Type an address and press Enter.
+      It runs in your browser, so it has none of Nijatva's blocking - but the controls are the ones you will use.</p>
+
+    <div style="border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#141414">
+      <div style="display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap">
+        <button class="ghost" style="padding:8px 14px;font-size:13px" onclick="demo('https://example.com')">example.com</button>
+        <button class="ghost" style="padding:8px 14px;font-size:13px" onclick="demo('https://en.m.wikipedia.org/wiki/Browser')">Wikipedia</button>
+        <button class="ghost" style="padding:8px 14px;font-size:13px" onclick="demo('https://lite.duckduckgo.com/lite/?q=privacy')">DuckDuckGo</button>
+        <span style="margin-left:auto;color:var(--dim2);font-size:12.5px">tap a site, or type below</span>
+      </div>
+      <iframe id="demo" title="Nijatva demo window"
+        src="https://vasudev-work.github.io/nijatva-web-store/embed.html?u=https%3A%2F%2Fexample.com"
+        style="width:100%;height:520px;border:0;display:block;background:#202124"
+        allow="clipboard-read; clipboard-write; fullscreen; autoplay" loading="lazy"></iframe>
+    </div>
+
+    <p class="tiny" style="text-align:left;margin-top:14px;max-width:640px">
+      Some sites refuse to appear inside a frame - they send a header that says so. That is their choice and no page
+      can override it; the window will tell you and offer to open it in a new tab. The app itself has no such limit,
+      because it is the browser.
+    </p>
   </div>
 </section>
 
@@ -309,6 +338,13 @@
 </footer>
 
 <script>
+  function demo(url){
+    var f = document.getElementById('demo');
+    if (!f) return;
+    f.src = 'https://vasudev-work.github.io/nijatva-web-store/embed.html?u=' + encodeURIComponent(url);
+    f.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
   function closeSheet(){ document.getElementById('sheet').classList.remove('on'); }
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape') closeSheet();
